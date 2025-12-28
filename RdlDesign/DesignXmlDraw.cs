@@ -4903,7 +4903,7 @@ namespace Majorsilence.Reporting.RdlDesign
 			{
 				string nms = rDoc.DocumentElement.GetNamespaceOfPrefix("rd");
 				if (nms == null || nms.Length == 0)
-					nms = DialogValidateRdl.MSDESIGNERSCHEMA;
+					nms = DialogValidateRdl.SCHEMA2025;
 
 				node = rDoc.CreateElement(name, nms);
 			}
@@ -4911,7 +4911,7 @@ namespace Majorsilence.Reporting.RdlDesign
 			{
 				string nms = rDoc.DocumentElement.GetNamespaceOfPrefix("fyi");
 				if (nms == null || nms.Length == 0)
-					nms = DialogValidateRdl.DESIGNERSCHEMA;
+					nms = DialogValidateRdl.SCHEMA2025;
 
 				node = rDoc.CreateElement(name, nms);
 			}
