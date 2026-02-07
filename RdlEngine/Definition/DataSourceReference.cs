@@ -25,7 +25,13 @@ namespace Majorsilence.Reporting.Rdl
         {
             // create the salt
             byte[] salt = new byte[IV_SIZE];
+            #if NET6_0_OR_GREATER
             RandomNumberGenerator.Fill(salt);
+#else
+            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(salt);
+            rng.Dispose();
+            #endif
 
             // create the key from the password phrase
             var pdb = new Rfc2898DeriveBytes(pswd, salt, 10000, HashAlgorithmName.SHA256);

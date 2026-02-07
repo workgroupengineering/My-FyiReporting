@@ -6,9 +6,10 @@
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
 		<EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
 		<Configurations>Debug;Release;Debug-DrawingCompat</Configurations>
-		<TargetFrameworks>net8.0-windows;net10.0-windows</TargetFrameworks>
+		<TargetFrameworks>net48;net8.0-windows;net10.0-windows</TargetFrameworks>
 		<WarningsAsErrors>4014</WarningsAsErrors>
-	</PropertyGroup>
+        <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    </PropertyGroup>
 	<ItemGroup>
 		<Compile Update="DesignXmlDraw.cs">
 			<SubType>UserControl</SubType>
@@ -81,5 +82,8 @@
 		<!-- Add your item references here -->
 		<PackageReference Include="System.Data.Odbc" />
 		<PackageReference Include="System.Data.OleDb" />
+	</ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+	  <PackageReference Include="System.Resources.Extensions" />
 	</ItemGroup>
 </Project>

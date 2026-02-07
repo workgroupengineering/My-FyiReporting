@@ -29,6 +29,7 @@
     <PackageVersion Include="SkiaSharp" Version="3.119.0" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.119.0" />
     <PackageVersion Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageVersion Include="System.Resources.Extensions" Version="8.0.0" />
     <PackageVersion Include="System.Spatial" Version="5.8.5" />
     <PackageVersion Include="System.Text.Json" Version="9.0.0" />
     <PackageVersion Include="WindowsAzure.Storage" Version="4.3.0" />

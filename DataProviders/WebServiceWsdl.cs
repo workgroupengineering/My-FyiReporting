@@ -113,7 +113,10 @@ namespace Majorsilence.Reporting.Data
 		private Assembly GetAssembly()
 		{
 #if !NETSTANDARD2_0 && !NET6_0_OR_GREATER
-            ServiceDescription sd = GetServiceDescription();
+            ServiceDescription sd=null;
+                
+            // HACK: We need to run the async method synchronously here, but we can't use .Result or .Wait() because it can cause deadlocks. So we use Task.Run to run it on a separate thread and then wait for the result.
+            Task.Run(async()=> sd = await GetServiceDescription()).GetAwaiter().GetResult();
 
 			// ServiceDescriptionImporter provide means for generating client proxy classes for XML Web services 
 			CodeNamespace cns = new CodeNamespace(_Namespace);
@@ -162,6 +165,26 @@ namespace Majorsilence.Reporting.Data
 #endif
 		}
 
+#if !NETSTANDARD2_0 && !NET6_0_OR_GREATER
+        public async Task<ServiceDescription> GetServiceDescription()
+        {
+            ServiceDescription sd = new ServiceDescription();
+            Stream sr=null;
+            try
+            {
+                sr = await GetStream();
+                sd = ServiceDescription.Read(sr);
+            }
+            finally
+            {
+                if (sr != null)
+                    sr.Close();
+            }
+
+            return sd;
+        }
+#endif
+        
         async Task<Stream> GetStream()
         {
             string fname = _url;

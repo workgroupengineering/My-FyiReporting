@@ -15,10 +15,11 @@
 		<DelaySign>false</DelaySign>
 		<PackageId>Majorsilence.Reporting.ReportDesigner</PackageId>
 		<Configurations>Debug;Release;Debug-DrawingCompat;Release-DrawingCompat</Configurations>
-		<TargetFrameworks>net8.0-windows;net10.0-windows</TargetFrameworks>
+		<TargetFrameworks>net48;net8.0-windows;net10.0-windows</TargetFrameworks>
 		<WarningsAsErrors>4014</WarningsAsErrors>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+        <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Update="System">
@@ -222,4 +223,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release-DrawingCompat|net8.0-windows|AnyCPU'">
 	  <Optimize>False</Optimize>
 	</PropertyGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+        <PackageReference Include="System.Resources.Extensions" />
+    </ItemGroup>
 </Project>

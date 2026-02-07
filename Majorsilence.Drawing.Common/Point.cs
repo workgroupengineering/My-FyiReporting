@@ -13,6 +13,7 @@ namespace Majorsilence.Drawing
             X = x;
             Y = y;
         }
+
         public override string ToString()
         {
             return $"Point [X={X}, Y={Y}]";
@@ -38,6 +39,7 @@ namespace Majorsilence.Drawing
             {
                 return X == point.X && Y == point.Y;
             }
+
             return false;
         }
 
@@ -56,9 +58,11 @@ namespace Majorsilence.Drawing
             return X == other.X && Y == other.Y;
         }
 
+#if NET6_0_OR_GREATER
         public override int GetHashCode()
         {
             return HashCode.Combine(X, Y);
         }
+#endif
     }
 }

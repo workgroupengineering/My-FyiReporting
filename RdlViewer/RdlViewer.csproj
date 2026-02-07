@@ -14,9 +14,10 @@
 		<DelaySign>false</DelaySign>
 		<PackageId>Majorsilence.Reporting.RdlViewer</PackageId>
 		<Configurations>Debug;Release;Debug-DrawingCompat</Configurations>
-		<TargetFrameworks>net8.0-windows;net10.0-windows</TargetFrameworks>
+		<TargetFrameworks>net48;net8.0-windows;net10.0-windows</TargetFrameworks>
 		<WarningsAsErrors>4014</WarningsAsErrors>
-	</PropertyGroup>
+        <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    </PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="RdlReader\bin\**" />
 		<Compile Remove="RdlReader\obj\**" />
@@ -87,5 +88,7 @@
 	<ItemGroup>
 	  <PackageReference Include="System.Text.Json" />
 	</ItemGroup>
-	<PropertyGroup />
+    <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+        <PackageReference Include="System.Resources.Extensions" />
+    </ItemGroup>
 </Project>
