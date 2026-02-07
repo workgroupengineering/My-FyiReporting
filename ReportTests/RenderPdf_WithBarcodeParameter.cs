@@ -75,7 +75,7 @@ namespace ReportTests.Utils
                 foreach (var image in images)
                 {
 #if DRAWINGCOMPAT
-                    var writer = new ZXing.SkiaSharp.BarcodeReader();
+                    var reader = new ZXing.SkiaSharp.BarcodeReader();
 #elif NET6_0_OR_GREATER
                     var reader = new ZXing.Windows.Compatibility.BarcodeReader();
 #else
