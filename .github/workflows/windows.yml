@@ -37,5 +37,6 @@ jobs:
           path: |
             Release-Builds/build-output/*.zip
             Release-Builds/build-output/*.nupkg
+            Release-Builds/build-output/*.snupkg
             sbom.xml
           retention-days: 1
