@@ -609,7 +609,6 @@ namespace Majorsilence.Reporting.RdlViewer
             _vScroll.Value = _hScroll.Value = 0;
             if (this.Visible)
             {
-                // HACK: async
                 await LoadPageIfNeeded();
                 this._DrawPanel.Invalidate();
             }
