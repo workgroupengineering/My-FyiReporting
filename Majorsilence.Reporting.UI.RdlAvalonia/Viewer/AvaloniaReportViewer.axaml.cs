@@ -103,6 +103,8 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             OpenButton.Click += OpenButtonOnClick;
             SaveButton.Click += SaveButtonOnClick;
             PrintButton.Click += PrintButtonOnClick;
+            CopyButton.Click += (_, _) => ReportCanvas.CopySelection();
+            SelectAllButton.Click += (_, _) => ReportCanvas.SelectAll();
             FirstPageButton.Click += (_, _) => SetPage(1);
             PreviousPageButton.Click += (_, _) => SetPage(_pageCurrent - 1);
             NextPageButton.Click += (_, _) => SetPage(_pageCurrent + 1);

@@ -8,6 +8,9 @@
             <Button x:Name="SaveButton" Content="Save As" />
             <Button x:Name="PrintButton" Content="Print" />
             <Separator Width="12" />
+            <Button x:Name="CopyButton" Content="Copy" ToolTip.Tip="Copy selected text (Ctrl+C)" />
+            <Button x:Name="SelectAllButton" Content="Select All" ToolTip.Tip="Select all text (Ctrl+A)" />
+            <Separator Width="12" />
             <Button x:Name="FirstPageButton" Content="&lt;&lt;" />
             <Button x:Name="PreviousPageButton" Content="&lt;" />
             <TextBox x:Name="PageTextBox" Width="50" />
