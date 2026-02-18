@@ -62,6 +62,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportTests.Windows", "Repo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Majorsilence.WinformUtils", "Majorsilence.WinformUtils\Majorsilence.WinformUtils.csproj", "{FD0687EF-1A0B-4992-9A17-1B8ABDD1A2D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Majorsilence.Reporting.UI.RdlAvalonia", "Majorsilence.Reporting.UI.RdlAvalonia\Majorsilence.Reporting.UI.RdlAvalonia.csproj", "{C228EFD4-D09C-4233-A534-132C98B38B57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -242,6 +244,14 @@ Global
 		{FD0687EF-1A0B-4992-9A17-1B8ABDD1A2D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD0687EF-1A0B-4992-9A17-1B8ABDD1A2D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FD0687EF-1A0B-4992-9A17-1B8ABDD1A2D2}.Release-DrawingCompat|Any CPU.ActiveCfg = Debug|Any CPU
+		{C228EFD4-D09C-4233-A534-132C98B38B57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C228EFD4-D09C-4233-A534-132C98B38B57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C228EFD4-D09C-4233-A534-132C98B38B57}.Debug-DrawingCompat|Any CPU.ActiveCfg = Debug|Any CPU
+		{C228EFD4-D09C-4233-A534-132C98B38B57}.Debug-DrawingCompat|Any CPU.Build.0 = Debug|Any CPU
+		{C228EFD4-D09C-4233-A534-132C98B38B57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C228EFD4-D09C-4233-A534-132C98B38B57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C228EFD4-D09C-4233-A534-132C98B38B57}.Release-DrawingCompat|Any CPU.ActiveCfg = Debug|Any CPU
+		{C228EFD4-D09C-4233-A534-132C98B38B57}.Release-DrawingCompat|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -165,6 +165,11 @@ namespace Majorsilence.Drawing
             return new Color(r, g, b, a);
         }
 
+        public static Color FromArgb(int a, int r, int g, int b)
+        {
+            return new Color(r, g, b, a);
+        }
+
         public static Color FromName(string name)
         {
             switch (name.ToLower())

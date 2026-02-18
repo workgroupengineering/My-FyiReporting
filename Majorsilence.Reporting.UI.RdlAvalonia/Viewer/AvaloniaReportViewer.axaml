@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewer="clr-namespace:Majorsilence.Reporting.UI.RdlAvalonia.Viewer"
+             x:Class="Majorsilence.Reporting.UI.RdlAvalonia.Viewer.AvaloniaReportViewer">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="6">
+            <Button x:Name="OpenButton" Content="Open" />
+            <Button x:Name="SaveButton" Content="Save As" />
+            <Button x:Name="PrintButton" Content="Print" />
+            <Separator Width="12" />
+            <Button x:Name="FirstPageButton" Content="&lt;&lt;" />
+            <Button x:Name="PreviousPageButton" Content="&lt;" />
+            <TextBox x:Name="PageTextBox" Width="50" />
+            <TextBlock x:Name="PageCountTextBlock" VerticalAlignment="Center" />
+            <Button x:Name="NextPageButton" Content="&gt;" />
+            <Button x:Name="LastPageButton" Content="&gt;&gt;" />
+            <Separator Width="12" />
+            <Button x:Name="ZoomInButton" Content="Zoom In" />
+            <Button x:Name="ZoomOutButton" Content="Zoom Out" />
+            <ComboBox x:Name="ZoomModeComboBox" Width="120" />
+            <Separator Width="12" />
+            <ToggleButton x:Name="ErrorsToggleButton" Content="Errors" />
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="6">
+            <TextBlock Text="Parameters" VerticalAlignment="Center" />
+            <TextBox x:Name="ParametersTextBox" Width="420" />
+            <Button x:Name="ApplyParametersButton" Content="Apply" />
+        </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <viewer:ReportCanvas x:Name="ReportCanvas" />
+            </ScrollViewer>
+            <Border Grid.Column="1" Background="#FFEFEFEF" BorderBrush="#FFDDDDDD" BorderThickness="1"
+                    IsVisible="False" x:Name="ErrorsPanel">
+                <ListBox x:Name="ErrorsListBox" Width="280" />
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>
+

@@ -48,6 +48,21 @@ namespace Majorsilence.Drawing
             _canvas.DrawRect(new SKRect(x, y, x + width, y + height), brush.ToSkPaint());
         }
 
+        public void DrawImage(Image image, Rectangle rect)
+        {
+            if (image?.SkiaBitmap != null)
+            {
+                var srcRect = new SKRect(0, 0, image.SkiaBitmap.Width, image.SkiaBitmap.Height);
+                var destRect = new SKRect(rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
+                _canvas.DrawBitmap(image.SkiaBitmap, srcRect, destRect);
+            }
+        }
+
+        public void DrawImage(Bitmap bitmap, Rectangle rect)
+        {
+            DrawImage((Image)bitmap, rect);
+        }
+
         public void FillEllipse(Brush brush, int x, int y, int width, int height)
         {
             _canvas.DrawOval(new SKRect(x, y, x + width, y + height), brush.ToSkPaint());

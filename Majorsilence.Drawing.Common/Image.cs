@@ -12,6 +12,11 @@ namespace Majorsilence.Drawing
 
         public int Width => _skBitmap.Width;
         public int Height => _skBitmap.Height;
+        
+        /// <summary>
+        /// Gets the underlying SkiaSharp bitmap
+        /// </summary>
+        public SKBitmap? SkiaBitmap => _skBitmap;
 
         public Image(SKBitmap bitmap)
         {
