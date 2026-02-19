@@ -427,22 +427,27 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                 return;
 
             var page = _pages[pageIndex];
-            BuildHitListFromPage(page, dpi);
+            // The renderer (SkiaPageDrawing) draws at coordinates: points * zoom
+            // The bitmap is displayed at logical size: pixelSize * 96 / dpi
+            // So a rendered pixel at (x * zoom) maps to logical position: x * zoom * 96 / dpi
+            var scale = dpi / 96.0;
+            BuildHitListFromPage(page, scale);
         }
 
-        private void BuildHitListFromPage(Page page, double dpi)
+        private void BuildHitListFromPage(Page page, double scale)
         {
             foreach (var item in page)
             {
                 if (item is not PageItem pi)
                     continue;
 
-                // Calculate pixel position
+                // Match the renderer's coordinate conversion: points * zoom
+                // Then convert from physical pixels to logical pixels: / scale
                 var rect = new Rect(
-                    ConvertToPixels(pi.X, dpi),
-                    ConvertToPixels(pi.Y, dpi),
-                    ConvertToPixels(pi.W, dpi),
-                    ConvertToPixels(pi.H, dpi)
+                    PointsToLogical(pi.X, scale),
+                    PointsToLogical(pi.Y, scale),
+                    PointsToLogical(pi.W, scale),
+                    PointsToLogical(pi.H, scale)
                 );
 
                 if (pi is PageTextHtml pth)
@@ -454,10 +459,10 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                         if (child is PageText)
                         {
                             var childRect = new Rect(
-                                ConvertToPixels(child.X, dpi),
-                                ConvertToPixels(child.Y, dpi),
-                                ConvertToPixels(child.W, dpi),
-                                ConvertToPixels(child.H, dpi)
+                                PointsToLogical(child.X, scale),
+                                PointsToLogical(child.Y, scale),
+                                PointsToLogical(child.W, scale),
+                                PointsToLogical(child.H, scale)
                             );
                             _hitList.Add(new HitListEntry(childRect, child));
                         }
@@ -470,9 +475,17 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             }
         }
 
-        private double ConvertToPixels(float points, double dpi)
+        /// <summary>
+        /// Converts points to logical (device-independent) pixel coordinates,
+        /// matching the renderer's coordinate system (points * zoom) then
+        /// accounting for display scaling (physical pixels to logical pixels).
+        /// </summary>
+        private double PointsToLogical(float points, double scale)
         {
-            return points * _zoom * dpi / 72.0;
+            // Renderer draws at: points * zoom (in physical pixels on the SKSurface)
+            // Bitmap logical size = physical size / scale
+            // So logical coordinate = points * zoom / scale
+            return points * _zoom / scale;
         }
     }
 }
