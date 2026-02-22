@@ -379,7 +379,11 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                 return;
             }
 
+#if NET6_0_OR_GREATER
             var pageIndex = Math.Clamp(_pageIndex, 0, _pages.PageCount - 1);
+#else
+            var pageIndex = Math.Max(0, Math.Min(_pageIndex, _pages.PageCount - 1));
+#endif
             var scale = VisualRoot?.RenderScaling ?? 1.0;
             var dpi = 96.0 * scale;
             var pixelWidth = Math.Max(1, (int)Math.Ceiling(_pages.PageWidth * dpi / 72.0 * _zoom));

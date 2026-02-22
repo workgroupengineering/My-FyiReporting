@@ -291,7 +291,11 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             }
             else if (_sourceFile != null)
             {
+#if NET6_0_OR_GREATER
                 source = await File.ReadAllTextAsync(_sourceFile.LocalPath);
+#else
+                source = File.ReadAllText(_sourceFile.LocalPath);
+#endif
             }
             else
             {
@@ -366,7 +370,11 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                 return;
             }
 
+#if NET6_0_OR_GREATER
             var newPage = Math.Clamp(page, 1, _pages.PageCount);
+#else
+            var newPage = Math.Max(1, Math.Min(page, _pages.PageCount));
+#endif
             _pageCurrent = newPage;
             PageTextBox.Text = newPage.ToString();
             ReportCanvas.SetPage(newPage - 1);
