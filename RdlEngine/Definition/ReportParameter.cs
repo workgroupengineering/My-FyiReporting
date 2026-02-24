@@ -495,12 +495,14 @@ namespace Majorsilence.Reporting.Rdl
 
 		/// <summary>
 		/// The runtime value of the parameter.
+		/// Prefer using GetValueAsync() to avoid synchronous blocking on an async call.
 		/// </summary>
 		public object Value
 		{
             get
             {
-                // HACK: async
+                // HACK: async - synchronous wrapper needed for property getter;
+                // use GetValueAsync() when an async context is available.
                 return Task.Run(async () => await _rp.GetRuntimeValue(this._rpt)).GetAwaiter().GetResult();
             }
 			set 
@@ -516,6 +518,15 @@ namespace Majorsilence.Reporting.Rdl
                 _rp.SetRuntimeValue(_rpt, dvalue); 
 			}
 		}
+
+        /// <summary>
+        /// Asynchronously gets the runtime value of the parameter.
+        /// Prefer this over the synchronous Value getter when an async context is available.
+        /// </summary>
+        public async Task<object> GetValueAsync()
+        {
+            return await _rp.GetRuntimeValue(this._rpt);
+        }
 
         /// <summary>
         /// Take a string and parse it into multiple values
