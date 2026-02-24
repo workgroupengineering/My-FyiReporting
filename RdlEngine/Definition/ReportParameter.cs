@@ -498,7 +498,11 @@ namespace Majorsilence.Reporting.Rdl
 		/// </summary>
 		public object Value
 		{
-			get { return _rp.GetRuntimeValue(this._rpt); }
+            get
+            {
+                // HACK: async
+                return Task.Run(async () => await _rp.GetRuntimeValue(this._rpt)).GetAwaiter().GetResult();
+            }
 			set 
 			{
                 if (this.MultiValue && value is string)
