@@ -920,7 +920,7 @@ namespace Majorsilence.Reporting.RdlViewer
             if (!(type == OutputPresentationType.PDF || type == OutputPresentationType.PDFOldStyle ||
                 type == OutputPresentationType.TIF || type == OutputPresentationType.TIFBW))
             {
-                var ld = GetParameters();        // split parms into dictionary
+                var ld = await GetParameters();        // split parms into dictionary
                 await _Report.RunGetData(ld);                     // obtain the data (again)
             }
             try
@@ -1465,7 +1465,7 @@ namespace Majorsilence.Reporting.RdlViewer
         {
             Pages pgs = null;
 
-            var ld = GetParameters();        // split parms into dictionary
+            var ld = await GetParameters();        // split parms into dictionary
 
             try
             {
@@ -1499,8 +1499,33 @@ namespace Majorsilence.Reporting.RdlViewer
             return pgs;
         }
 
-        private IDictionary GetParameters()
+        private async Task<IDictionary> GetParameters()
         {
+            // If we have a loaded report with user parameters, use those runtime values
+            // instead of the _Parameters dictionary which may be stale
+            if (_Report != null && _Report.UserReportParameters != null && _Report.UserReportParameters.Count > 0)
+            {
+                Dictionary<string, object> runtimeParams = new Dictionary<string, object>();
+                foreach (UserReportParameter urp in _Report.UserReportParameters)
+                {
+                    // Always include user parameters, even when the value is null, so that
+                    // stale values from _Parameters cannot override user-visible parameters.
+                    runtimeParams[urp.Name] = await urp.GetValueAsync();
+                }
+                // Merge with any parameters from _Parameters that aren't in UserReportParameters
+                if (_Parameters != null)
+                {
+                    foreach (DictionaryEntry kvp in _Parameters)
+                    {
+                        string key = kvp.Key.ToString();
+                        if (!runtimeParams.ContainsKey(key))
+                        {
+                            runtimeParams[key] = kvp.Value;
+                        }
+                    }
+                }
+                return runtimeParams;
+            }
             return _Parameters;
         }
 
