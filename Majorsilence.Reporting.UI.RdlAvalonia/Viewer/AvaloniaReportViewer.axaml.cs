@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Majorsilence.Reporting.Rdl;
 using Majorsilence.Reporting.RdlEngine;
@@ -116,7 +117,19 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             ApplyParametersButton.Click += ApplyParametersButtonOnClick;
             ErrorsToggleButton.IsCheckedChanged += ErrorsToggleOnChanged;
 
-            ReportCanvas.SizeChanged += (_, _) => ApplyZoomMode();
+            ReportScrollViewer.SizeChanged += (_, _) => ApplyZoomMode();
+            ReportScrollViewer.AddHandler(PointerWheelChangedEvent, OnScrollViewerPointerWheelChanged, handledEventsToo: false);
+        }
+
+        private void OnScrollViewerPointerWheelChanged(object? sender, PointerWheelEventArgs e)
+        {
+            if (e.KeyModifiers.HasFlag(KeyModifiers.Control))
+            {
+                // Ctrl+Wheel = zoom in/out
+                var delta = e.Delta.Y > 0 ? 0.1 : -0.1;
+                SetZoom(Math.Max(0.1, _zoom + delta));
+                e.Handled = true;
+            }
         }
 
         private async void OpenButtonOnClick(object? sender, RoutedEventArgs e)
@@ -395,8 +408,9 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                 return;
             }
 
-            var viewport = ReportCanvas.Bounds;
-            if (viewport.Width <= 1 || viewport.Height <= 1)
+            var viewportWidth = ReportScrollViewer.Viewport.Width;
+            var viewportHeight = ReportScrollViewer.Viewport.Height;
+            if (viewportWidth <= 1 || viewportHeight <= 1)
             {
                 return;
             }
@@ -411,10 +425,10 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             switch (_zoomMode)
             {
                 case ZoomMode.FitPage:
-                    _zoom = Math.Min(viewport.Width / pageWidth, viewport.Height / pageHeight);
+                    _zoom = Math.Min(viewportWidth / pageWidth, viewportHeight / pageHeight);
                     break;
                 case ZoomMode.FitWidth:
-                    _zoom = viewport.Width / pageWidth;
+                    _zoom = viewportWidth / pageWidth;
                     break;
                 case ZoomMode.ActualSize:
                     _zoom = 1.0;

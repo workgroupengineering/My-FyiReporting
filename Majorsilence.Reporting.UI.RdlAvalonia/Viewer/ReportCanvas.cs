@@ -194,6 +194,7 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             _needsRender = true;
             _selectList.Clear();
             _hitList.Clear();
+            InvalidateMeasure();
             InvalidateVisual();
         }
 
@@ -203,6 +204,7 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             _needsRender = true;
             _selectList.Clear();
             _hitList.Clear();
+            InvalidateMeasure();
             InvalidateVisual();
         }
 
@@ -210,7 +212,34 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
         {
             _zoom = Math.Max(0.1, zoom);
             _needsRender = true;
+            InvalidateMeasure();
             InvalidateVisual();
+        }
+
+        /// <summary>
+        /// Gets the logical size of the current rendered page, used by the ScrollViewer.
+        /// </summary>
+        public Size PageLogicalSize
+        {
+            get
+            {
+                if (_pages == null || _pages.PageCount == 0)
+                    return default;
+
+                var scale = VisualRoot?.RenderScaling ?? 1.0;
+                var dpi = 96.0 * scale;
+                var width = _pages.PageWidth * dpi / 72.0 * _zoom / scale;
+                var height = _pages.PageHeight * dpi / 72.0 * _zoom / scale;
+                return new Size(width, height);
+            }
+        }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            var size = PageLogicalSize;
+            if (size.Width <= 0 || size.Height <= 0)
+                return base.MeasureOverride(availableSize);
+            return size;
         }
 
         protected override void OnPointerPressed(PointerPressedEventArgs e)

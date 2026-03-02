@@ -34,7 +34,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="ReportScrollViewer" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <viewer:ReportCanvas x:Name="ReportCanvas" />
             </ScrollViewer>
             <Border Grid.Column="1" Background="#FFEFEFEF" BorderBrush="#FFDDDDDD" BorderThickness="1"
