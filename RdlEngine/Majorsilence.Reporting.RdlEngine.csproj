@@ -94,7 +94,6 @@
 		<Compile Remove="PageDrawing.cs" />
 		<Compile Remove="RdlPrint.cs" />
 		<Compile Remove="Render\CompilationExtensions.cs" />
-		<Compile Remove="Render\ExcelValet_old.cs" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(DefineConstants.Contains(DRAWINGCOMPAT))'">
 		<Compile Remove="Definition\EMFConverter\**\**\*.cs" />
