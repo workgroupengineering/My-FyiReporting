@@ -1,5 +1,8 @@
 name: mac
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [master]
