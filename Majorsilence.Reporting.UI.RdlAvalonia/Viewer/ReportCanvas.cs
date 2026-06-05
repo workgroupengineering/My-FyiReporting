@@ -6,6 +6,7 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
@@ -226,7 +227,7 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                 if (_pages == null || _pages.PageCount == 0)
                     return default;
 
-                var scale = VisualRoot?.RenderScaling ?? 1.0;
+                var scale = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
                 var dpi = 96.0 * scale;
                 var width = _pages.PageWidth * dpi / 72.0 * _zoom / scale;
                 var height = _pages.PageHeight * dpi / 72.0 * _zoom / scale;
@@ -413,7 +414,7 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
 #else
             var pageIndex = Math.Max(0, Math.Min(_pageIndex, _pages.PageCount - 1));
 #endif
-            var scale = VisualRoot?.RenderScaling ?? 1.0;
+            var scale = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
             var dpi = 96.0 * scale;
             var pixelWidth = Math.Max(1, (int)Math.Ceiling(_pages.PageWidth * dpi / 72.0 * _zoom));
             var pixelHeight = Math.Max(1, (int)Math.Ceiling(_pages.PageHeight * dpi / 72.0 * _zoom));
@@ -467,7 +468,7 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             BuildHitListFromPage(page, scale);
         }
 
-        private void BuildHitListFromPage(Page page, double scale)
+        private void BuildHitListFromPage(Majorsilence.Reporting.Rdl.Page page, double scale)
         {
             foreach (var item in page)
             {
