@@ -2,46 +2,208 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:viewer="clr-namespace:Majorsilence.Reporting.UI.RdlAvalonia.Viewer"
              x:Class="Majorsilence.Reporting.UI.RdlAvalonia.Viewer.AvaloniaReportViewer">
-    <DockPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="6">
-            <Button x:Name="OpenButton" Content="Open" />
-            <Button x:Name="SaveButton" Content="Save As" />
-            <Button x:Name="PrintButton" Content="Print" />
-            <Separator Width="12" />
-            <Button x:Name="CopyButton" Content="Copy" ToolTip.Tip="Copy selected text (Ctrl+C)" />
-            <Button x:Name="SelectAllButton" Content="Select All" ToolTip.Tip="Select all text (Ctrl+A)" />
-            <Separator Width="12" />
-            <Button x:Name="FirstPageButton" Content="&lt;&lt;" />
-            <Button x:Name="PreviousPageButton" Content="&lt;" />
-            <TextBox x:Name="PageTextBox" Width="50" />
-            <TextBlock x:Name="PageCountTextBlock" VerticalAlignment="Center" />
-            <Button x:Name="NextPageButton" Content="&gt;" />
-            <Button x:Name="LastPageButton" Content="&gt;&gt;" />
-            <Separator Width="12" />
-            <Button x:Name="ZoomInButton" Content="Zoom In" />
-            <Button x:Name="ZoomOutButton" Content="Zoom Out" />
-            <ComboBox x:Name="ZoomModeComboBox" Width="120" />
-            <Separator Width="12" />
-            <ToggleButton x:Name="ErrorsToggleButton" Content="Errors" />
-        </StackPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="6" Margin="6">
-            <TextBlock Text="Parameters" VerticalAlignment="Center" />
-            <TextBox x:Name="ParametersTextBox" Width="420" />
-            <Button x:Name="ApplyParametersButton" Content="Apply" />
-        </StackPanel>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <ScrollViewer x:Name="ReportScrollViewer" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                <viewer:ReportCanvas x:Name="ReportCanvas" />
-            </ScrollViewer>
-            <Border Grid.Column="1" Background="#FFEFEFEF" BorderBrush="#FFDDDDDD" BorderThickness="1"
-                    IsVisible="False" x:Name="ErrorsPanel">
-                <ListBox x:Name="ErrorsListBox" Width="280" />
-            </Border>
-        </Grid>
-    </DockPanel>
-</UserControl>
+  <UserControl.Styles>
 
+    <Style Selector="Button.toolbar">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="Height" Value="30"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <Style Selector="ToggleButton.toolbar">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="Height" Value="30"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+  </UserControl.Styles>
+
+  <DockPanel>
+
+    <!-- ── Toolbar ─────────────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Top"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="4,3">
+      <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+        <!-- File group -->
+        <Button x:Name="OpenButton"  Classes="toolbar" ToolTip.Tip="Open report…">
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Text="📂" FontSize="14" VerticalAlignment="Center"/>
+            <TextBlock Text="Open" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Button>
+        <Button x:Name="SaveButton"  Classes="toolbar" ToolTip.Tip="Save / export…">
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Text="💾" FontSize="14" VerticalAlignment="Center"/>
+            <TextBlock Text="Save" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Button>
+        <Button x:Name="PrintButton" Classes="toolbar" ToolTip.Tip="Save as PDF for printing">
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Text="🖨" FontSize="14" VerticalAlignment="Center"/>
+            <TextBlock Text="Print" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Button>
+
+        <!-- Vertical divider -->
+        <Separator Width="1" Height="18" Margin="4,0"
+                   Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+
+        <!-- Selection group -->
+        <Button x:Name="CopyButton"      Classes="toolbar" ToolTip.Tip="Copy selected text (Ctrl+C)">
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Text="⎘" FontSize="15" VerticalAlignment="Center"/>
+            <TextBlock Text="Copy" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Button>
+        <Button x:Name="SelectAllButton" Classes="toolbar" ToolTip.Tip="Select all text (Ctrl+A)">
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Text="☰" FontSize="14" VerticalAlignment="Center"/>
+            <TextBlock Text="Select All" VerticalAlignment="Center"/>
+          </StackPanel>
+        </Button>
+
+        <!-- Vertical divider -->
+        <Separator Width="1" Height="18" Margin="4,0"
+                   Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+
+        <!-- Page navigation -->
+        <Button x:Name="FirstPageButton"    Classes="toolbar" Content="⏮" FontSize="14" ToolTip.Tip="First page"/>
+        <Button x:Name="PreviousPageButton" Classes="toolbar" Content="◀"  FontSize="12" ToolTip.Tip="Previous page"/>
+        <TextBox x:Name="PageTextBox"
+                 Width="44" Height="28"
+                 VerticalContentAlignment="Center"
+                 TextAlignment="Center"
+                 Padding="2,0"
+                 Margin="2,0"
+                 CornerRadius="4"/>
+        <TextBlock x:Name="PageCountTextBlock"
+                   VerticalAlignment="Center"
+                   Margin="0,0,4,0"
+                   FontSize="13"
+                   Opacity="0.6"/>
+        <Button x:Name="NextPageButton" Classes="toolbar" Content="▶"  FontSize="12" ToolTip.Tip="Next page"/>
+        <Button x:Name="LastPageButton" Classes="toolbar" Content="⏭" FontSize="14" ToolTip.Tip="Last page"/>
+
+        <!-- Vertical divider -->
+        <Separator Width="1" Height="18" Margin="4,0"
+                   Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+
+        <!-- Zoom group -->
+        <Button x:Name="ZoomOutButton" Classes="toolbar" Content="−" FontSize="16" ToolTip.Tip="Zoom out"/>
+        <Button x:Name="ZoomInButton"  Classes="toolbar" Content="+" FontSize="16" ToolTip.Tip="Zoom in"/>
+        <ComboBox x:Name="ZoomModeComboBox"
+                  Width="110" Height="28"
+                  Margin="4,0,0,0"
+                  Padding="6,0"
+                  VerticalContentAlignment="Center"
+                  FontSize="13"/>
+
+        <!-- Vertical divider -->
+        <Separator Width="1" Height="18" Margin="4,0"
+                   Background="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
+
+        <!-- Errors toggle -->
+        <ToggleButton x:Name="ErrorsToggleButton" Classes="toolbar" ToolTip.Tip="Toggle errors panel">
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Text="⚠" FontSize="14" VerticalAlignment="Center"/>
+            <TextBlock Text="Errors" VerticalAlignment="Center"/>
+          </StackPanel>
+        </ToggleButton>
+
+      </WrapPanel>
+    </Border>
+
+    <!-- ── Parameters bar ────────────────────────────────────────── -->
+    <Expander DockPanel.Dock="Top"
+              BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+              BorderThickness="0,0,0,1"
+              Padding="0"
+              IsExpanded="False">
+      <Expander.Header>
+        <TextBlock Text="Parameters" FontSize="12" Opacity="0.7" VerticalAlignment="Center"/>
+      </Expander.Header>
+      <StackPanel Orientation="Horizontal" Spacing="8" Margin="8,6,8,8">
+        <TextBox x:Name="ParametersTextBox"
+                 Width="420"
+                 Watermark="name=value&amp;name2=value2"
+                 VerticalContentAlignment="Center"/>
+        <Button x:Name="ApplyParametersButton" Classes="accent" Content="Apply"/>
+      </StackPanel>
+    </Expander>
+
+    <!-- ── Status bar ─────────────────────────────────────────────── -->
+    <Border DockPanel.Dock="Bottom"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="10,3">
+      <Grid ColumnDefinitions="*,Auto,Auto">
+        <TextBlock x:Name="StatusMessageTextBlock"
+                   Grid.Column="0"
+                   FontSize="11"
+                   Opacity="0.6"
+                   VerticalAlignment="Center"/>
+        <TextBlock x:Name="StatusPageTextBlock"
+                   Grid.Column="1"
+                   FontSize="11"
+                   Opacity="0.6"
+                   VerticalAlignment="Center"
+                   Margin="0,0,16,0"/>
+        <TextBlock x:Name="StatusZoomTextBlock"
+                   Grid.Column="2"
+                   FontSize="11"
+                   Opacity="0.6"
+                   VerticalAlignment="Center"
+                   MinWidth="52"
+                   TextAlignment="Right"/>
+      </Grid>
+    </Border>
+
+    <!-- ── Main content area ──────────────────────────────────────── -->
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+
+      <ScrollViewer x:Name="ReportScrollViewer"
+                    Grid.Column="0"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto">
+        <viewer:ReportCanvas x:Name="ReportCanvas" Margin="16"/>
+      </ScrollViewer>
+
+      <Border x:Name="ErrorsPanel"
+              Grid.Column="1"
+              IsVisible="False"
+              Width="300"
+              BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+              BorderThickness="1,0,0,0">
+        <DockPanel>
+          <Border DockPanel.Dock="Top"
+                  BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                  BorderThickness="0,0,0,1"
+                  Padding="10,6">
+            <TextBlock Text="Errors" FontWeight="SemiBold" FontSize="13"/>
+          </Border>
+          <ListBox x:Name="ErrorsListBox"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   Padding="4"
+                   FontSize="12"/>
+        </DockPanel>
+      </Border>
+    </Grid>
+
+  </DockPanel>
+</UserControl>

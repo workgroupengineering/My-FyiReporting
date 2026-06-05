@@ -99,7 +99,10 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
         {
             var zoomModes = new[] { ZoomMode.FitWidth, ZoomMode.FitPage, ZoomMode.ActualSize };
             ZoomModeComboBox.ItemsSource = zoomModes;
+            ZoomModeComboBox.ItemTemplate = new Avalonia.Controls.Templates.FuncDataTemplate<ZoomMode>(
+                (mode, _) => new Avalonia.Controls.TextBlock { Text = mode.ToDisplayString() });
             ZoomModeComboBox.SelectedItem = _zoomMode;
+            UpdateStatusZoom();
 
             OpenButton.Click += OpenButtonOnClick;
             SaveButton.Click += SaveButtonOnClick;
@@ -352,13 +355,20 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             if (_pages == null)
             {
                 PageTextBox.Text = "0";
-                PageCountTextBlock.Text = "/0";
+                PageCountTextBlock.Text = "/ 0";
+                StatusPageTextBlock.Text = string.Empty;
                 return;
             }
 
             PageTextBox.Text = _pageCurrent.ToString();
-            PageCountTextBlock.Text = "/" + _pages.PageCount;
+            PageCountTextBlock.Text = $"/ {_pages.PageCount}";
+            StatusPageTextBlock.Text = $"Page {_pageCurrent} of {_pages.PageCount}";
             SetPage(_pageCurrent);
+        }
+
+        private void UpdateStatusZoom()
+        {
+            StatusZoomTextBlock.Text = $"{(int)Math.Round(_zoom * 100)} %";
         }
 
         private void UpdateErrorsUi()
@@ -399,6 +409,7 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             _zoomMode = ZoomMode.ActualSize;
             ZoomModeComboBox.SelectedItem = _zoomMode;
             ReportCanvas.SetZoom(_zoom);
+            UpdateStatusZoom();
         }
 
         private void ApplyZoomMode()
@@ -436,6 +447,7 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
             }
 
             ReportCanvas.SetZoom(_zoom);
+            UpdateStatusZoom();
         }
 
         private void ZoomModeComboBoxOnSelectionChanged(object? sender, SelectionChangedEventArgs e)
