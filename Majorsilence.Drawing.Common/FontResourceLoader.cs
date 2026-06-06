@@ -4,9 +4,78 @@ namespace Majorsilence.Drawing
     /// Extracts the embedded fallback fonts to a temporary directory so that
     /// renderers needing file-system font paths (e.g. the iTextSharp PDF renderer)
     /// can locate them without requiring the fonts to be installed on the host.
+    /// Also provides CSS font-family stack helpers for HTML renderers.
     /// </summary>
     public static class FontResourceLoader
     {
+        // Maps known Windows/macOS font names → ordered cross-platform alternatives,
+        // mirroring the substitution table in FontSubstitution so we can build CSS stacks
+        // without exposing SkiaSharp types.
+        private static readonly Dictionary<string, string[]> _cssTable = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Arial"]                = ["Liberation Sans", "DejaVu Sans", "Helvetica", "FreeSans", "Noto Sans"],
+            ["Times New Roman"]      = ["Liberation Serif", "DejaVu Serif", "FreeSerif", "Noto Serif"],
+            ["Courier New"]          = ["Liberation Mono", "DejaVu Sans Mono", "FreeMono", "Noto Sans Mono", "Menlo"],
+            ["Comic Sans MS"]        = ["DejaVu Sans", "Liberation Sans", "Noto Sans"],
+            ["Impact"]               = ["DejaVu Sans Condensed", "DejaVu Sans", "Liberation Sans", "Noto Sans"],
+            ["Tahoma"]               = ["DejaVu Sans", "Liberation Sans", "Noto Sans"],
+            ["Verdana"]              = ["DejaVu Sans", "Liberation Sans", "Noto Sans"],
+            ["Georgia"]              = ["DejaVu Serif", "Liberation Serif", "Noto Serif"],
+            ["Trebuchet MS"]         = ["DejaVu Sans", "Liberation Sans", "Noto Sans"],
+            ["Calibri"]              = ["Carlito", "DejaVu Sans", "Liberation Sans", "Noto Sans"],
+            ["Cambria"]              = ["Caladea", "DejaVu Serif", "Liberation Serif", "Noto Serif"],
+            ["Helvetica"]            = ["Liberation Sans", "DejaVu Sans", "Arial", "Noto Sans"],
+            ["Palatino Linotype"]    = ["FreeSerif", "Noto Serif", "DejaVu Serif"],
+            ["Book Antiqua"]         = ["FreeSerif", "Noto Serif", "DejaVu Serif"],
+            ["Century Gothic"]       = ["DejaVu Sans", "Liberation Sans", "Noto Sans"],
+            ["Lucida Console"]       = ["DejaVu Sans Mono", "Liberation Mono", "Noto Sans Mono"],
+            ["Lucida Sans Unicode"]  = ["DejaVu Sans", "Liberation Sans", "Noto Sans"],
+            ["Microsoft Sans Serif"] = ["Liberation Sans", "DejaVu Sans", "Noto Sans"],
+            ["MS Sans Serif"]        = ["Liberation Sans", "DejaVu Sans", "Noto Sans"],
+            ["Wingdings"]            = ["DejaVu Sans", "Liberation Sans", "Noto Sans"],
+            ["Symbol"]               = ["DejaVu Sans", "Liberation Sans", "Noto Sans"],
+        };
+
+        private static readonly HashSet<string> _serifFonts = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Times New Roman", "Liberation Serif", "DejaVu Serif", "Georgia",
+            "Palatino Linotype", "Book Antiqua", "FreeSerif", "Noto Serif",
+            "Caladea", "Cambria",
+        };
+
+        private static readonly HashSet<string> _monoFonts = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Courier New", "Liberation Mono", "DejaVu Sans Mono", "FreeMono",
+            "Noto Sans Mono", "Lucida Console", "Menlo", "Consolas",
+        };
+
+        /// <summary>
+        /// Returns a CSS font-family value that starts with <paramref name="fontFamily"/> and
+        /// appends cross-platform alternatives from the substitution table plus a generic
+        /// CSS family keyword (serif / monospace / sans-serif) as a final browser fallback.
+        /// </summary>
+        public static string GetCssFontStack(string fontFamily)
+        {
+            var primary = fontFamily.Split(',')[0].Trim().Trim('\'').Trim('"');
+
+            var parts = new List<string> { QuoteCss(primary) };
+
+            if (_cssTable.TryGetValue(primary, out var alternatives))
+                foreach (var alt in alternatives)
+                    parts.Add(QuoteCss(alt));
+
+            parts.Add(
+                _serifFonts.Contains(primary) ? "serif" :
+                _monoFonts.Contains(primary)  ? "monospace" :
+                "sans-serif"
+            );
+
+            return string.Join(", ", parts);
+        }
+
+        private static string QuoteCss(string name) =>
+            name.Contains(' ') ? $"'{name}'" : name;
+
         private static string? _extractedDir;
 
 #if NET10_OR_GREATER

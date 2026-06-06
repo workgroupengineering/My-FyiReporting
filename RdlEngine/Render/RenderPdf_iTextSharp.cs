@@ -122,7 +122,11 @@ namespace Majorsilence.Reporting.Rdl
                     {
                         // No system fonts found — extract bundled Liberation fonts to a temp directory.
                         _liberationFonts = true;
+#if DRAWINGCOMPAT
                         return Majorsilence.Drawing.FontResourceLoader.GetFontDirectory();
+#else
+                        return "/usr/share/fonts";
+#endif
                     }
                 }
 
@@ -637,7 +641,11 @@ namespace Majorsilence.Reporting.Rdl
                     if (embeddedFile != null)
                     {
                         fontname = embeddedFile;
+#if DRAWINGCOMPAT
                         folder = Majorsilence.Drawing.FontResourceLoader.GetFontDirectory();
+#else
+                        folder = FontFolder;
+#endif
                     }
                     else if (IsOSX)
                     {

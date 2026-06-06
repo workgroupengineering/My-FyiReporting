@@ -889,9 +889,20 @@ namespace Majorsilence.Reporting.Rdl
 				sb.Append("font-style:normal;");
 
 			if (_FontFamily != null)
-				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-family:{0};",await _FontFamily.EvaluateString(rpt, row));
+			{
+				var _ff = await _FontFamily.EvaluateString(rpt, row);
+#if DRAWINGCOMPAT
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-family:{0};", Draw2.FontResourceLoader.GetCssFontStack(_ff));
+#else
+				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-family:{0};", _ff);
+#endif
+			}
 			else if (bDefaults)
+#if DRAWINGCOMPAT
+				sb.Append("font-family:" + Draw2.FontResourceLoader.GetCssFontStack("Arial") + ";");
+#else
 				sb.Append("font-family:Arial;");
+#endif
 
 			if (_FontSize != null)
 				sb.AppendFormat(NumberFormatInfo.InvariantInfo, "font-size:{0};", await _FontSize.EvaluateString(rpt, row));
