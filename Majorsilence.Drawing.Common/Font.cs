@@ -51,8 +51,7 @@ namespace Majorsilence.Drawing
             var cacheKey = (fontFamily, typefaceStyle);
             if (!TypefaceCache.TryGetValue(cacheKey, out _typeface))
             {
-                _typeface = SKTypeface.FromFamilyName(fontFamily, typefaceStyle)
-                            ?? SKTypeface.Default;
+                _typeface = FontSubstitution.Resolve(fontFamily, typefaceStyle);
                 TypefaceCache[cacheKey] = _typeface;
             }
 

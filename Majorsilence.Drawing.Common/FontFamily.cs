@@ -19,7 +19,7 @@ namespace Majorsilence.Drawing
         // Returns cell descent in design units at a nominal em height of 1000.
         public float GetCellDescent(FontStyle fs)
         {
-            using var typeface = SKTypeface.FromFamilyName(Name, GetSkFontStyle(fs)) ?? SKTypeface.Default;
+            using var typeface = FontSubstitution.Resolve(Name, GetSkFontStyle(fs));
             using var font = new SKFont(typeface, 1000f);
             return Math.Abs(font.Metrics.Descent);
         }
@@ -27,7 +27,7 @@ namespace Majorsilence.Drawing
         // Returns cell ascent in design units at a nominal em height of 1000.
         public float GetCellAscent(FontStyle fs)
         {
-            using var typeface = SKTypeface.FromFamilyName(Name, GetSkFontStyle(fs)) ?? SKTypeface.Default;
+            using var typeface = FontSubstitution.Resolve(Name, GetSkFontStyle(fs));
             using var font = new SKFont(typeface, 1000f);
             return Math.Abs(font.Metrics.Ascent);
         }
@@ -41,7 +41,7 @@ namespace Majorsilence.Drawing
         // Returns the line spacing in design units.
         public float GetLineSpacing(FontStyle fs)
         {
-            using var typeface = SKTypeface.FromFamilyName(Name, GetSkFontStyle(fs)) ?? SKTypeface.Default;
+            using var typeface = FontSubstitution.Resolve(Name, GetSkFontStyle(fs));
             using var font = new SKFont(typeface, 1000f);
             var m = font.Metrics;
             return Math.Abs(m.Ascent) + Math.Abs(m.Descent) + Math.Abs(m.Leading);
