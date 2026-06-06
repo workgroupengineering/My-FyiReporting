@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
 using Majorsilence.Reporting.Rdl;
 using Majorsilence.Reporting.RdlEngine;
 
@@ -81,18 +83,77 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                 return;
             }
 
-            _report = await GetReportAsync();
-            if (_report == null)
+            try
             {
-                return;
+                _report = await GetReportAsync();
+                if (_report == null)
+                {
+                    return;
+                }
+
+                _pages = await BuildPagesAsync(_report);
+                _pageCurrent = 1;
+
+                ReportCanvas.SetReport(_report, _pages);
+                UpdatePageUi();
+                UpdateErrorsUi();
             }
+            catch (Exception ex)
+            {
+                _report = null;
+                _pages = null;
+                _sourceFile = null;
+                _sourceRdl = null;
+                ReportCanvas.SetReport(null, null);
+                UpdatePageUi();
+                UpdateErrorsUi();
+                await ShowErrorAsync($"Failed to load report:\n\n{ex.Message}");
+            }
+        }
 
-            _pages = await BuildPagesAsync(_report);
-            _pageCurrent = 1;
+        private async Task ShowErrorAsync(string message)
+        {
+            var topLevel = TopLevel.GetTopLevel(this);
+            var owner = topLevel as Window;
 
-            ReportCanvas.SetReport(_report, _pages);
-            UpdatePageUi();
-            UpdateErrorsUi();
+            var okButton = new Button
+            {
+                Content = "OK",
+                HorizontalAlignment = HorizontalAlignment.Right,
+                MinWidth = 80
+            };
+
+            var dialog = new Window
+            {
+                Title = "Report Error",
+                Width = 480,
+                MinHeight = 160,
+                MaxHeight = 420,
+                SizeToContent = SizeToContent.Height,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                CanResize = false,
+                Content = new StackPanel
+                {
+                    Margin = new Avalonia.Thickness(20),
+                    Spacing = 16,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = message,
+                            TextWrapping = TextWrapping.Wrap
+                        },
+                        okButton
+                    }
+                }
+            };
+
+            okButton.Click += (_, _) => dialog.Close();
+
+            if (owner != null)
+                await dialog.ShowDialog(owner);
+            else
+                dialog.Show();
         }
 
         private void InitializeUi()
