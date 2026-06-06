@@ -63,18 +63,14 @@ namespace Majorsilence.Reporting.Cri
             writer.Format = format;
             writer.Options.Hints[EncodeHintType.CHARACTER_SET] = "UTF-8";
 
-            using Draw2.Graphics g = Draw2.Graphics.FromImage(bm);
-            float mag = PixelConversions.GetMagnification(g, bm.Width, bm.Height, OptimalHeight, OptimalWidth);
-
-            int barHeight = PixelConversions.PixelXFromMm(g, OptimalHeight * mag);
-            int barWidth = PixelConversions.PixelYFromMm(g, OptimalWidth * mag);
-
-            writer.Options.Height = barHeight;
-            writer.Options.Width = barWidth;
+            // Generate the barcode at the exact pixel dimensions of the destination
+            // bitmap so that every renderer (Avalonia, PDF, WinForms) receives an
+            // image that already matches its cell size and needs no further scaling.
+            writer.Options.Height = Math.Max(1, bm.Height);
+            writer.Options.Width = Math.Max(1, bm.Width);
 
             try
             {
-                // TODO: move to program startup
                 System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             }
             catch (InvalidOperationException)

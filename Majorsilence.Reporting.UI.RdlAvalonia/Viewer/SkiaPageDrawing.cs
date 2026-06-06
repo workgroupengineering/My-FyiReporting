@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Majorsilence.Reporting.Rdl;
 using Drawing = Majorsilence.Drawing;
@@ -200,12 +201,15 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
 
             try
             {
-                var imageData = pi.GetImageData();
+                // Request the image at the exact pixel dimensions of the display
+                // rectangle so that custom report items (barcodes, QR codes, etc.)
+                // are generated at the right size and not stretched or squashed when
+                // rows have different heights.
+                var imageData = pi.GetImageData(Math.Max(1, rect.Width), Math.Max(1, rect.Height));
                 if (imageData != null && imageData.Length > 0)
                 {
                     using var ms = new System.IO.MemoryStream(imageData);
                     using var bitmap = new Drawing.Bitmap(ms);
-                    // Draw the image in the specified rectangle
                     g.DrawImage(bitmap, rect);
                 }
             }

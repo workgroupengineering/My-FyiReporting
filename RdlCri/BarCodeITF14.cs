@@ -45,11 +45,11 @@ namespace Majorsilence.Reporting.Cri
             {
                 EncodedType = BarcodeStandard.Type.Itf14,
                 IncludeLabel = true,
-               // Width = (int)OptimalWidth,
-               // Height = (int)OptimalHeight
+                Width = bm.Width > 0 ? bm.Width : (int)OptimalWidth,
+                Height = bm.Height > 0 ? bm.Height : (int)OptimalHeight,
             };
             var v = barcode.Encode(value);
- 
+
             var img = Image.FromStream(v.Encode().AsStream());
 
             bm = new Bitmap(img);

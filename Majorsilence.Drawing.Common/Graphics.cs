@@ -13,7 +13,31 @@ namespace Majorsilence.Drawing
         public Drawing2D.SmoothingMode SmoothingMode { get; set; }
         public Drawing2D.PixelOffsetMode PixelOffsetMode { get; set; }
         public Drawing2D.CompositingQuality CompositingQuality { get; set; }
-        public Drawing.GraphicsUnit PageUnit { get; set; }
+        private Drawing.GraphicsUnit _pageUnit = Drawing.GraphicsUnit.Display;
+
+        public Drawing.GraphicsUnit PageUnit
+        {
+            get => _pageUnit;
+            set
+            {
+                _pageUnit = value;
+                // Reset any prior unit scale and re-apply for the new unit so that
+                // drawing code using PageUnit=Millimeter or PageUnit=Point gets
+                // automatic coordinate mapping to pixels on the SkiaSharp canvas.
+                // (BarCodeEAN13 draws bar geometry in mm and relies on this.)
+                _canvas.ResetMatrix();
+                switch (value)
+                {
+                    case Drawing.GraphicsUnit.Millimeter:
+                        _canvas.Scale(DpiX / 25.4f, DpiY / 25.4f);
+                        break;
+                    case Drawing.GraphicsUnit.Point:
+                        _canvas.Scale(DpiX / 72f, DpiY / 72f);
+                        break;
+                    // Pixel, Display, World: pixel-identity — no scale needed.
+                }
+            }
+        }
         public float DpiX { get; set; } = 96;
         public float DpiY { get; set; } = 96;
 
