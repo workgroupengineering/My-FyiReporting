@@ -1,21 +1,21 @@
-﻿using Majorsilence.Drawing.Drawing2D;
 using SkiaSharp;
 using System.Reflection;
 
 
 namespace Majorsilence.Drawing
 {
-    // Compatibility wrapper for Color
     public class Color
     {
         public static Color Black => new Color(0, 0, 0);
         public static Color White => new Color(255, 255, 255);
         public static Color Red => new Color(255, 0, 0);
-        public static Color Green => new Color(0, 255, 0);
+        public static Color Green => new Color(0, 128, 0);
         public static Color Blue => new Color(0, 0, 255);
         public static Color Yellow => new Color(255, 255, 0);
         public static Color Cyan => new Color(0, 255, 255);
+        public static Color Aqua => new Color(0, 255, 255);
         public static Color Magenta => new Color(255, 0, 255);
+        public static Color Fuchsia => new Color(255, 0, 255);
         public static Color Transparent => new Color(0, 0, 0, 0);
         public static Color Orange => new Color(255, 165, 0);
         public static Color Purple => new Color(128, 0, 128);
@@ -23,6 +23,7 @@ namespace Majorsilence.Drawing
         public static Color Pink => new Color(255, 192, 203);
         public static Color Lime => new Color(0, 255, 0);
         public static Color Gray => new Color(128, 128, 128);
+        public static Color Grey => new Color(128, 128, 128);
         public static Color Navy => new Color(0, 0, 128);
         public static Color Olive => new Color(128, 128, 0);
         public static Color Teal => new Color(0, 128, 128);
@@ -39,6 +40,7 @@ namespace Majorsilence.Drawing
         public static Color LightCoral => new Color(240, 128, 128);
         public static Color DarkSalmon => new Color(233, 150, 122);
         public static Color LightSalmon => new Color(255, 160, 122);
+        public static Color Salmon => new Color(250, 128, 114);
         public static Color PeachPuff => new Color(255, 218, 185);
         public static Color NavajoWhite => new Color(255, 222, 173);
         public static Color Moccasin => new Color(255, 228, 181);
@@ -50,9 +52,10 @@ namespace Majorsilence.Drawing
         public static Color Beige => new Color(245, 245, 220);
         public static Color Cornsilk => new Color(255, 248, 220);
         public static Color DeepSkyBlue => new Color(0, 191, 255);
+        public static Color DodgerBlue => new Color(30, 144, 255);
+        public static Color RoyalBlue => new Color(65, 105, 225);
+        public static Color SteelBlue => new Color(70, 130, 180);
         public static Color Gold => new Color(255, 215, 0);
-
-
         public static Color SlateGray => new Color(112, 128, 144);
         public static Color DarkGray => new Color(169, 169, 169);
         public static Color LightGray => new Color(211, 211, 211);
@@ -69,17 +72,31 @@ namespace Majorsilence.Drawing
         public static Color LightSkyBlue => new Color(135, 206, 250);
         public static Color LightSteelBlue => new Color(176, 196, 222);
         public static Color LightYellow => new Color(255, 255, 224);
-
-
         public static Color CadetBlue => new Color(95, 158, 160);
         public static Color MediumTurquoise => new Color(72, 209, 204);
+        public static Color Turquoise => new Color(64, 224, 208);
         public static Color Aquamarine => new Color(127, 255, 212);
         public static Color Azure => new Color(240, 255, 255);
         public static Color AliceBlue => new Color(240, 248, 255);
         public static Color MintCream => new Color(245, 255, 250);
         public static Color DarkSeaGreen => new Color(143, 188, 143);
+        public static Color SeaGreen => new Color(46, 139, 87);
+        public static Color ForestGreen => new Color(34, 139, 34);
+        public static Color MediumSeaGreen => new Color(60, 179, 113);
+        public static Color YellowGreen => new Color(154, 205, 50);
+        public static Color OliveDrab => new Color(107, 142, 35);
+        public static Color GreenYellow => new Color(173, 255, 47);
+        public static Color Chartreuse => new Color(127, 255, 0);
+        public static Color LawnGreen => new Color(124, 252, 0);
         public static Color PaleGreen => new Color(152, 251, 152);
+        public static Color SpringGreen => new Color(0, 255, 127);
+        public static Color MediumSpringGreen => new Color(0, 250, 154);
         public static Color MediumPurple => new Color(147, 112, 219);
+        public static Color DarkOrchid => new Color(153, 50, 204);
+        public static Color DarkViolet => new Color(148, 0, 211);
+        public static Color BlueViolet => new Color(138, 43, 226);
+        public static Color MediumOrchid => new Color(186, 85, 211);
+        public static Color Violet => new Color(238, 130, 238);
         public static Color CornflowerBlue => new Color(100, 149, 237);
         public static Color Lavender => new Color(230, 230, 250);
         public static Color GhostWhite => new Color(248, 248, 255);
@@ -92,7 +109,42 @@ namespace Majorsilence.Drawing
         public static Color PaleTurquoise => new Color(175, 238, 238);
         public static Color OldLace => new Color(253, 245, 230);
         public static Color Bisque => new Color(255, 228, 196);
-
+        public static Color Crimson => new Color(220, 20, 60);
+        public static Color FireBrick => new Color(178, 34, 34);
+        public static Color DarkRed => new Color(139, 0, 0);
+        public static Color HotPink => new Color(255, 105, 180);
+        public static Color DeepPink => new Color(255, 20, 147);
+        public static Color MediumVioletRed => new Color(199, 21, 133);
+        public static Color PaleVioletRed => new Color(219, 112, 147);
+        public static Color Coral => new Color(255, 127, 80);
+        public static Color Tomato => new Color(255, 99, 71);
+        public static Color OrangeRed => new Color(255, 69, 0);
+        public static Color DarkOrange => new Color(255, 140, 0);
+        public static Color Wheat => new Color(245, 222, 179);
+        public static Color SandyBrown => new Color(244, 164, 96);
+        public static Color Tan => new Color(210, 180, 140);
+        public static Color RosyBrown => new Color(188, 143, 143);
+        public static Color SaddleBrown => new Color(139, 69, 19);
+        public static Color Sienna => new Color(160, 82, 45);
+        public static Color Snow => new Color(255, 250, 250);
+        public static Color SeaShell => new Color(255, 245, 238);
+        public static Color HoneyDew => new Color(240, 255, 240);
+        public static Color Thistle => new Color(216, 191, 216);
+        public static Color Indigo => new Color(75, 0, 130);
+        public static Color SlateBlue => new Color(106, 90, 205);
+        public static Color MediumSlateBlue => new Color(123, 104, 238);
+        public static Color DarkSlateBlue => new Color(72, 61, 139);
+        public static Color MidnightBlue => new Color(25, 25, 112);
+        public static Color DarkBlue => new Color(0, 0, 139);
+        public static Color MediumBlue => new Color(0, 0, 205);
+        public static Color PowderBlue => new Color(176, 224, 230);
+        public static Color SkyBlue => new Color(135, 206, 235);
+        public static Color DarkCyan => new Color(0, 139, 139);
+        public static Color DarkMagenta => new Color(139, 0, 139);
+        public static Color DarkGreen => new Color(0, 100, 0);
+        public static Color WhiteSmoke => new Color(245, 245, 245);
+        public static Color MistyRose => new Color(255, 228, 225);
+        public static Color PapayaWhip2 => new Color(255, 239, 213);
 
         public byte R { get; }
         public byte G { get; }
@@ -105,42 +157,13 @@ namespace Majorsilence.Drawing
             get
             {
                 if (_name != null)
-                {
                     return _name;
-                }
-
                 _name = GetColorName(ToSkColor());
                 return _name;
             }
         }
 
-        private static string GetColorName(SKColor color)
-        {
-            // Get all public static properties of the SKColors class
-            var properties = typeof(SKColors).GetFields(BindingFlags.Public | BindingFlags.Static);
-
-            foreach (var property in properties)
-            {
-                // Get the value of the property (which is an SKColor)
-                if (property.GetValue(null) is SKColor skColor)
-                {
-                    // Compare the RGBA values
-                    if (skColor.Red == color.Red &&
-                        skColor.Green == color.Green &&
-                        skColor.Blue == color.Blue &&
-                        skColor.Alpha == color.Alpha)
-                    {
-                        return property.Name; // Return the name of the matching color
-                    }
-                }
-            }
-
-            return string.Empty; // No match found
-        }
-
-
-        public bool IsEmpty => R == 0 && G == 0 && B == 0 && A == 0;
-
+        public bool IsEmpty => A == 0 && R == 0 && G == 0 && B == 0;
 
         public Color(int r, int g, int b, int a = 255)
         {
@@ -148,7 +171,6 @@ namespace Majorsilence.Drawing
             G = (byte)g;
             B = (byte)b;
             A = (byte)a;
-            _name = GetColorName(ToSkColor());
         }
 
         public Color(byte r, byte g, byte b, byte a = 255)
@@ -157,7 +179,6 @@ namespace Majorsilence.Drawing
             G = g;
             B = b;
             A = a;
-            _name = GetColorName(ToSkColor());
         }
 
         public static Color FromRgb(int a, int r, int g, int b)
@@ -170,97 +191,95 @@ namespace Majorsilence.Drawing
             return new Color(r, g, b, a);
         }
 
-        public static Color FromName(string name)
+        public static Color FromArgb(int argb)
         {
-            switch (name.ToLower())
-            {
-                case "black": return Black;
-                case "white": return White;
-                case "red": return Red;
-                case "green": return Green;
-                case "blue": return Blue;
-                case "yellow": return Yellow;
-                case "cyan": return Cyan;
-                case "magenta": return Magenta;
-                case "transparent": return Transparent;
-                case "orange": return Orange;
-                case "purple": return Purple;
-                case "brown": return Brown;
-                case "pink": return Pink;
-                case "lime": return Lime;
-                case "gray": return Gray;
-                case "navy": return Navy;
-                case "olive": return Olive;
-                case "teal": return Teal;
-                case "silver": return Silver;
-                case "maroon": return Maroon;
-                case "chocolate": return Chocolate;
-                case "indianred": return IndianRed;
-                case "peru": return Peru;
-                case "burlywood": return BurlyWood;
-                case "antiquewhite": return AntiqueWhite;
-                case "floralwhite": return FloralWhite;
-                case "ivory": return Ivory;
-                case "lightcoral": return LightCoral;
-                case "darksalmon": return DarkSalmon;
-                case "lightsalmon": return LightSalmon;
-                case "peachpuff": return PeachPuff;
-                case "navajowhite": return NavajoWhite;
-                case "moccasin": return Moccasin;
-                case "papayawhip": return PapayaWhip;
-                case "goldenrod": return Goldenrod;
-                case "darkgoldenrod": return DarkGoldenrod;
-                case "darkkhaki": return DarkKhaki;
-                case "khaki": return Khaki;
-                case "beige": return Beige;
-                case "cornsilk": return Cornsilk;
-                case "deepskyblue": return DeepSkyBlue;
-                case "gold": return Gold;
-                case "slategray": return SlateGray;
-                case "darkgray": return DarkGray;
-                case "lightgray": return LightGray;
-                case "darkslategray": return DarkSlateGray;
-                case "dimgray": return DimGray;
-                case "lightslategray": return LightSlateGray;
-                case "gainsboro": return Gainsboro;
-                case "lightblue": return LightBlue;
-                case "lightcyan": return LightCyan;
-                case "lightgoldenrodyellow": return LightGoldenrodYellow;
-                case "lightgreen": return LightGreen;
-                case "lightpink": return LightPink;
-                case "lightseagreen": return LightSeaGreen;
-                case "lightskyblue": return LightSkyBlue;
-                case "lightsteelblue": return LightSteelBlue;
-                case "lightyellow": return LightYellow;
-                case "cadetblue": return CadetBlue;
-                case "mediumturquoise": return MediumTurquoise;
-                case "aquamarine": return Aquamarine;
-                case "azure": return Azure;
-                case "aliceblue": return AliceBlue;
-                case "mintcream": return MintCream;
-                case "darkseagreen": return DarkSeaGreen;
-                case "palegreen": return PaleGreen;
-                case "mediumpurple": return MediumPurple;
-                case "cornflowerblue": return CornflowerBlue;
-                case "lavender": return Lavender;
-                case "ghostwhite": return GhostWhite;
-                case "palegoldenrod": return PaleGoldenrod;
-                case "lemonchiffon": return LemonChiffon;
-                case "orchid": return Orchid;
-                case "plum": return Plum;
-                case "lavenderblush": return LavenderBlush;
-                case "linen": return Linen;
-                case "paleturquoise": return PaleTurquoise;
-                case "oldlace": return OldLace;
-                case "bisque": return Bisque;
-                default: throw new ArgumentException($"Unknown color name: {name}");
-            }
+            byte a = (byte)((argb >> 24) & 0xFF);
+            byte r = (byte)((argb >> 16) & 0xFF);
+            byte g = (byte)((argb >> 8) & 0xFF);
+            byte b = (byte)(argb & 0xFF);
+            return new Color(r, g, b, a);
         }
 
-        // Convert to SkiaSharp's SKColor
+        public static Color FromArgb(int alpha, Color baseColor)
+        {
+            return new Color(baseColor.R, baseColor.G, baseColor.B, (byte)alpha);
+        }
+
+        public int ToArgb()
+        {
+            return (A << 24) | (R << 16) | (G << 8) | B;
+        }
+
+        public static Color FromName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return Empty;
+
+            // Use reflection over our own type to find a matching named color
+            var props = typeof(Color).GetProperties(BindingFlags.Public | BindingFlags.Static);
+            foreach (var prop in props)
+            {
+                if (string.Equals(prop.Name, name, StringComparison.OrdinalIgnoreCase) &&
+                    prop.PropertyType == typeof(Color))
+                {
+                    return (Color)prop.GetValue(null);
+                }
+            }
+
+            // Try HTML-style hex color
+            if (name.StartsWith("#"))
+                return ColorTranslator.FromHtml(name);
+
+            return Empty;
+        }
+
         public SKColor ToSkColor()
         {
-            return new SKColor((byte)R, (byte)G, (byte)B, (byte)A);
+            return new SKColor(R, G, B, A);
+        }
+
+        private static string GetColorName(SKColor color)
+        {
+            var properties = typeof(SKColors).GetFields(BindingFlags.Public | BindingFlags.Static);
+            foreach (var property in properties)
+            {
+                if (property.GetValue(null) is SKColor skColor &&
+                    skColor.Red == color.Red &&
+                    skColor.Green == color.Green &&
+                    skColor.Blue == color.Blue &&
+                    skColor.Alpha == color.Alpha)
+                {
+                    return property.Name;
+                }
+            }
+            return string.Empty;
+        }
+
+        public static bool operator ==(Color left, Color right)
+        {
+            if (left is null) return right is null;
+            if (right is null) return false;
+            return left.R == right.R && left.G == right.G && left.B == right.B && left.A == right.A;
+        }
+
+        public static bool operator !=(Color left, Color right)
+        {
+            return !(left == right);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Color other && this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return ToArgb();
+        }
+
+        public override string ToString()
+        {
+            return $"Color [A={A}, R={R}, G={G}, B={B}]";
         }
 
 #if !DRAWINGCOMPAT
@@ -270,5 +289,4 @@ namespace Majorsilence.Drawing
         }
 #endif
     }
-
 }

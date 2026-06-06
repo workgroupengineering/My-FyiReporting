@@ -43,7 +43,7 @@ namespace Majorsilence.Drawing
         // Convert bitmap to graphics
         public Graphics GetGraphics()
         {
-            return new Graphics(new SKCanvas(_skBitmap));
+            return new Graphics(new SKCanvas(_skBitmap), ownsCanvas: true);
         }
 
         // Dispose of the bitmap

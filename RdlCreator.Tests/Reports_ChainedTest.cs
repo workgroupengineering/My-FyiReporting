@@ -78,7 +78,7 @@ namespace Majorsilence.Reporting.RdlCreator.Tests
             var text = string.Join(" ",
                 pdfDocument.GetPages().SelectMany(page => page.GetWords()).Select(word => word.Text));
 
-            Assert.That(text, Is.Not.Null);
+        Assert.That(text, Is.Not.Null);
             Assert.That(text,
                 Is.EqualTo(
                     "Test Data Set Report CategoryID CategoryName Description Beverages Soft drinks, coffees, teas, beers, and ales Condiments Sweet and savory sauces, relishes, spreads, and seasonings Confections Desserts, candies, and sweet breads Dairy Products Cheeses Grains/Cereals Breads, crackers, pasta, and cereal Meat/Poultry Prepared meats Produce Dried fruit and bean curd Seafood Seaweed and fish 1 of 1"));
