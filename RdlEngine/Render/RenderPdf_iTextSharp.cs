@@ -63,6 +63,7 @@ namespace Majorsilence.Reporting.Rdl
         int _osVersion = (int)Environment.OSVersion.Version.Major;
 
         bool _dejavuFonts = false;
+        bool _liberationFonts = false;
 
         /// <summary>
         /// List itextSharp Basefont added
@@ -107,6 +108,11 @@ namespace Majorsilence.Reporting.Rdl
                     {
                         return "/usr/share/fonts/truetype/msttcorefonts";
                     }
+                    else if (System.IO.Directory.Exists("/usr/share/fonts/truetype/liberation"))
+                    {
+                        _liberationFonts = true;
+                        return "/usr/share/fonts/truetype/liberation";
+                    }
                     else if (System.IO.Directory.Exists("/usr/share/fonts/truetype/dejavu"))
                     {
                         _dejavuFonts = true;
@@ -114,8 +120,9 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        _dejavuFonts = true;
-                        return Environment.GetFolderPath(Environment.SpecialFolder.Fonts);
+                        // No system fonts found — extract bundled Liberation fonts to a temp directory.
+                        _liberationFonts = true;
+                        return Majorsilence.Drawing.FontResourceLoader.GetFontDirectory();
                     }
                 }
 
@@ -336,6 +343,26 @@ namespace Majorsilence.Reporting.Rdl
 
         #region private methods
 
+        // Maps font family names to the base filename of the bundled fallback font.
+        // Used when neither the requested font nor a system substitute can be found.
+        private static readonly Dictionary<string, string> _embeddedFontMap =
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Calibri"]  = "Carlito",
+                ["Carlito"]  = "Carlito",
+                ["Cambria"]  = "Caladea",
+                ["Caladea"]  = "Caladea",
+                ["Noto Sans"] = "NotoSans",
+            };
+
+        private static string? GetEmbeddedFontFilename(string family, bool bold, bool italic)
+        {
+            if (!_embeddedFontMap.TryGetValue(family, out var baseName))
+                return null;
+            var suffix = bold && italic ? "BoldItalic" : bold ? "Bold" : italic ? "Italic" : "Regular";
+            return $"{baseName}-{suffix}.ttf";
+        }
+
         /// <summary>
         /// Font name , for my application almost fonts  will be unicode and embedded
         /// </summary>
@@ -421,8 +448,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Serif Condensed Bold Italic" : "Times-BoldItalic";
-                        fontname = (_dejavuFonts ? "DejaVuSerifCondensed-BoldItalic.ttf" : "timesbi.ttf");
+                        face = _liberationFonts ? "Liberation Serif Bold Italic" : _dejavuFonts ? "DejaVu Serif Condensed Bold Italic" : "Times-BoldItalic";
+                        fontname = _liberationFonts ? "LiberationSerif-BoldItalic.ttf" : _dejavuFonts ? "DejaVuSerifCondensed-BoldItalic.ttf" : "timesbi.ttf";
                     }
                 }
                 else if (si.IsFontBold())
@@ -435,8 +462,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Serif Condensed Bold" : "Times-Bold";
-                        fontname = (_dejavuFonts ? "DejaVuSerifCondensed-Bold.ttf" : "timesbd.ttf");
+                        face = _liberationFonts ? "Liberation Serif Bold" : _dejavuFonts ? "DejaVu Serif Condensed Bold" : "Times-Bold";
+                        fontname = _liberationFonts ? "LiberationSerif-Bold.ttf" : _dejavuFonts ? "DejaVuSerifCondensed-Bold.ttf" : "timesbd.ttf";
                     }
                 }
                 else if (si.FontStyle == FontStyleEnum.Italic)
@@ -449,8 +476,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Serif Condensed Italic" : "Times-Italic";
-                        fontname = (_dejavuFonts ? "DejaVuSerifCondensed-Italic.ttf" : "timesi.ttf");
+                        face = _liberationFonts ? "Liberation Serif Italic" : _dejavuFonts ? "DejaVu Serif Condensed Italic" : "Times-Italic";
+                        fontname = _liberationFonts ? "LiberationSerif-Italic.ttf" : _dejavuFonts ? "DejaVuSerifCondensed-Italic.ttf" : "timesi.ttf";
                     }
                 }
                 else
@@ -463,8 +490,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Serif Condensed" : face;
-                        fontname = (_dejavuFonts ? "DejaVuSerifCondensed.ttf" : "times.ttf");
+                        face = _liberationFonts ? "Liberation Serif" : _dejavuFonts ? "DejaVu Serif Condensed" : face;
+                        fontname = _liberationFonts ? "LiberationSerif-Regular.ttf" : _dejavuFonts ? "DejaVuSerifCondensed.ttf" : "times.ttf";
                     }
                 }
 
@@ -487,8 +514,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Sans Condensed Bold Oblique" : "Arial-BoldItalic";
-                        fontname = (_dejavuFonts ? "DejaVuSansCondensed-BoldOblique.ttf" : "arialbi.ttf");
+                        face = _liberationFonts ? "Liberation Sans Bold Italic" : _dejavuFonts ? "DejaVu Sans Condensed Bold Oblique" : "Arial-BoldItalic";
+                        fontname = _liberationFonts ? "LiberationSans-BoldItalic.ttf" : _dejavuFonts ? "DejaVuSansCondensed-BoldOblique.ttf" : "arialbi.ttf";
                     }
                 }
                 else if (si.IsFontBold())
@@ -501,8 +528,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Sans Condensed Bold" : "Arial-Bold";
-                        fontname = (_dejavuFonts ? "DejaVuSansCondensed-Bold.ttf" : "arialbd.ttf");
+                        face = _liberationFonts ? "Liberation Sans Bold" : _dejavuFonts ? "DejaVu Sans Condensed Bold" : "Arial-Bold";
+                        fontname = _liberationFonts ? "LiberationSans-Bold.ttf" : _dejavuFonts ? "DejaVuSansCondensed-Bold.ttf" : "arialbd.ttf";
                     }
                 }
                 else if (si.FontStyle == FontStyleEnum.Italic)
@@ -515,8 +542,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Sans Condensed Oblique" : "Arial-Italic";
-                        fontname = (_dejavuFonts ? "DejaVuSansCondensed-Oblique.ttf" : "ariali.ttf");
+                        face = _liberationFonts ? "Liberation Sans Italic" : _dejavuFonts ? "DejaVu Sans Condensed Oblique" : "Arial-Italic";
+                        fontname = _liberationFonts ? "LiberationSans-Italic.ttf" : _dejavuFonts ? "DejaVuSansCondensed-Oblique.ttf" : "ariali.ttf";
                     }
                 }
                 else
@@ -529,8 +556,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Sans Condensed" : face;
-                        fontname = (_dejavuFonts ? "DejaVuSansCondensed.ttf" : "arial.ttf");
+                        face = _liberationFonts ? "Liberation Sans" : _dejavuFonts ? "DejaVu Sans Condensed" : face;
+                        fontname = _liberationFonts ? "LiberationSans-Regular.ttf" : _dejavuFonts ? "DejaVuSansCondensed.ttf" : "arial.ttf";
                     }
                 }
 
@@ -548,8 +575,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Sans Mono Bold Oblique" : "Courier New-BoldItalic";
-                        fontname = (_dejavuFonts ? "DejaVuSansMono-BoldOblique.ttf" : "courbi.ttf");
+                        face = _liberationFonts ? "Liberation Mono Bold Italic" : _dejavuFonts ? "DejaVu Sans Mono Bold Oblique" : "Courier New-BoldItalic";
+                        fontname = _liberationFonts ? "LiberationMono-BoldItalic.ttf" : _dejavuFonts ? "DejaVuSansMono-BoldOblique.ttf" : "courbi.ttf";
                     }
                 }
                 else if (si.IsFontBold())
@@ -562,8 +589,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Sans Mono Bold" : "Courier New-Bold";
-                        fontname = (_dejavuFonts ? "DejaVuSansMono-Oblique.ttf" : "courbd.ttf");
+                        face = _liberationFonts ? "Liberation Mono Bold" : _dejavuFonts ? "DejaVu Sans Mono Bold" : "Courier New-Bold";
+                        fontname = _liberationFonts ? "LiberationMono-Bold.ttf" : _dejavuFonts ? "DejaVuSansMono-Oblique.ttf" : "courbd.ttf";
                     }
                 }
                 else if (si.FontStyle == FontStyleEnum.Italic)
@@ -576,8 +603,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Sans Mono Oblique" : "Courier New-Italic";
-                        fontname = (_dejavuFonts ? "DejaVuSansMono-Oblique.ttf" : "couri.ttf");
+                        face = _liberationFonts ? "Liberation Mono Italic" : _dejavuFonts ? "DejaVu Sans Mono Oblique" : "Courier New-Italic";
+                        fontname = _liberationFonts ? "LiberationMono-Italic.ttf" : _dejavuFonts ? "DejaVuSansMono-Oblique.ttf" : "couri.ttf";
                     }
                 }
                 else
@@ -590,8 +617,8 @@ namespace Majorsilence.Reporting.Rdl
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Sans Mono" : face;
-                        fontname = (_dejavuFonts ? "DejaVuSansMono.ttf" : "cour.ttf");
+                        face = _liberationFonts ? "Liberation Mono" : _dejavuFonts ? "DejaVu Sans Mono" : face;
+                        fontname = _liberationFonts ? "LiberationMono-Regular.ttf" : _dejavuFonts ? "DejaVuSansMono.ttf" : "cour.ttf";
                     }
                 }
 
@@ -605,15 +632,22 @@ namespace Majorsilence.Reporting.Rdl
                 bf = ff.BaseFont;
                 if (bf == null)
                 {
-                    if (IsOSX)
+                    // Try a metric-compatible bundled font (e.g. Carlito for Calibri, Caladea for Cambria).
+                    var embeddedFile = GetEmbeddedFontFilename(face, si.IsFontBold(), si.FontStyle == FontStyleEnum.Italic);
+                    if (embeddedFile != null)
+                    {
+                        fontname = embeddedFile;
+                        folder = Majorsilence.Drawing.FontResourceLoader.GetFontDirectory();
+                    }
+                    else if (IsOSX)
                     {
                         face = "ArialMT";
                         fontname = "Arial.ttf";
                     }
                     else
                     {
-                        face = _dejavuFonts ? "DejaVu Sans Condensed" : "Arial";
-                        fontname = (_dejavuFonts ? "DejaVuSansCondensed.ttf" : "arial.ttf");
+                        face = _liberationFonts ? "Liberation Sans" : _dejavuFonts ? "DejaVu Sans Condensed" : "Arial";
+                        fontname = _liberationFonts ? "LiberationSans-Regular.ttf" : _dejavuFonts ? "DejaVuSansCondensed.ttf" : "arial.ttf";
                     }
                 }
 
