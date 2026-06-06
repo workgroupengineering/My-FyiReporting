@@ -322,6 +322,8 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                 return;
             }
 
+            await _report.RunGetData(_parameters);
+
             OneFileStreamGen? sg = null;
             try
             {
