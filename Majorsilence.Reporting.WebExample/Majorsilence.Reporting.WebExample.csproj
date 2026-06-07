@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\RdlAsp.Mvc\Majorsilence.Reporting.RdlAsp.Mvc.csproj" />
+      <ProjectReference Include="..\WebDesigner\WebDesigner.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,5 @@
 using Majorsilence.Reporting.RdlAsp;
+using Majorsilence.Reporting.WebDesigner;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,13 @@ builder.Services.AddSingleton<Settings>(sp =>
     var settings = new Settings();
     builder.Configuration.Bind("Settings", settings);
     return settings;
+});
+
+builder.Services.AddRdlDesigner(o =>
+{
+    o.ReportsFolder = Path.Combine(builder.Environment.ContentRootPath, "Reports");
+    o.AllowSave = true;
+    o.AllowLoad = true;
 });
 
 var app = builder.Build();
@@ -32,5 +40,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRdlDesigner();
 
 app.Run();
