@@ -12,7 +12,16 @@ namespace Majorsilence.Drawing
 
         public int Width => _skBitmap.Width;
         public int Height => _skBitmap.Height;
-        
+
+        public float HorizontalResolution { get; set; } = 96f;
+        public float VerticalResolution { get; set; } = 96f;
+
+        public void SetResolution(float xDpi, float yDpi)
+        {
+            HorizontalResolution = xDpi;
+            VerticalResolution = yDpi;
+        }
+
         /// <summary>
         /// Gets the underlying SkiaSharp bitmap
         /// </summary>

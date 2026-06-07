@@ -243,7 +243,8 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                     new Avalonia.Platform.Storage.FilePickerFileType("CSV") { Patterns = new[] { "*.csv" } },
                     new Avalonia.Platform.Storage.FilePickerFileType("MHTML") { Patterns = new[] { "*.mhtml", "*.mht" } },
                     new Avalonia.Platform.Storage.FilePickerFileType("RTF") { Patterns = new[] { "*.rtf" } },
-                    new Avalonia.Platform.Storage.FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } }
+                    new Avalonia.Platform.Storage.FilePickerFileType("Excel") { Patterns = new[] { "*.xlsx" } },
+                    new Avalonia.Platform.Storage.FilePickerFileType("TIFF") { Patterns = new[] { "*.tif", "*.tiff" } }
                 }
             });
 
@@ -279,6 +280,10 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                     break;
                 case "xlsx":
                     outputType = OutputPresentationType.Excel2007;
+                    break;
+                case "tif":
+                case "tiff":
+                    outputType = OutputPresentationType.TIF;
                     break;
             }
 
@@ -350,6 +355,9 @@ namespace Majorsilence.Reporting.UI.RdlAvalonia.Viewer
                         break;
                     case OutputPresentationType.MHTML:
                         await _report.RunRender(sg, OutputPresentationType.MHTML);
+                        break;
+                    case OutputPresentationType.TIF:
+                        await _report.RunRender(sg, OutputPresentationType.TIF);
                         break;
                     default:
                         throw new InvalidOperationException("Unsupported export format: " + Path.GetExtension(filePath));

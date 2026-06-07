@@ -157,7 +157,6 @@ namespace Majorsilence.Reporting.Rdl
                     ip =new RenderPdf_iTextSharp(this, sg);
                     await _Report.Run(ip);
                     break;          
-#if !DRAWINGCOMPAT
 				case OutputPresentationType.TIF:
                     ip = new RenderTif(this, sg);
                     await _Report.Run(ip);
@@ -168,7 +167,6 @@ namespace Majorsilence.Reporting.Rdl
                     ip = rtif;
                     await _Report.Run(ip);
                     break;
-#endif
                 case OutputPresentationType.XML:
 					if (_Report.DataTransform != null && _Report.DataTransform.Length > 0)
 					{
@@ -304,7 +302,6 @@ namespace Majorsilence.Reporting.Rdl
 			return;
 		}
 
-#if !DRAWINGCOMPAT
 		/// <summary>
 		/// RunRenderTif will render a TIF given the page structure
 		/// </summary>
@@ -331,7 +328,6 @@ namespace Majorsilence.Reporting.Rdl
 
             return;
         }
-#endif
 
 		private void RunRenderXmlTransform(IStreamGen sg, MemoryStreamGen msg)
 		{

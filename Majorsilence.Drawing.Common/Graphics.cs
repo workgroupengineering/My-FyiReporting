@@ -290,6 +290,12 @@ namespace Majorsilence.Drawing
             _canvas.DrawPath(path, pen.ToSkPaint());
         }
 
+        public void DrawPie(Pen pen, RectangleF rect, float startAngle, float sweepAngle)
+        {
+            using var path = BuildPiePath(new SKRect(rect.X, rect.Y, rect.Right, rect.Bottom), startAngle, sweepAngle);
+            _canvas.DrawPath(path, pen.ToSkPaint());
+        }
+
         private static SKPath BuildPiePath(SKRect rect, float startAngle, float sweepAngle)
         {
             var path = new SKPath();
@@ -369,6 +375,15 @@ namespace Majorsilence.Drawing
                 path.CubicTo(cp1, cp2, p2);
             }
             _canvas.DrawPath(path, pen.ToSkPaint());
+        }
+
+        public void DrawCurve(Pen pen, PointF[] points, int offset, int numberOfSegments, float tension)
+        {
+            if (points == null || numberOfSegments < 1) return;
+            int end = Math.Min(offset + numberOfSegments + 1, points.Length);
+            var segment = new PointF[end - offset];
+            Array.Copy(points, offset, segment, 0, segment.Length);
+            DrawCurve(pen, segment, tension);
         }
 
         public void DrawClosedCurve(Pen pen, PointF[] points, float tension = 0.5f)
