@@ -767,6 +767,23 @@ const SHADOW_HTML = /* html */`
   .field-icon { margin-right: 4px; font-size: 10px; color: #aaa; }
   #data-empty { padding: 12px 10px; font-size: 11px; color: #aaa; font-style: italic; }
 
+  /* ── Table column reorder list ── */
+  .tbl-col-row {
+    display: flex; align-items: center; gap: 2px;
+    padding: 2px 0; border-bottom: 1px solid #f0f0f0;
+  }
+  .tbl-col-name {
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 11px; color: #333;
+  }
+  .tbl-col-btn {
+    border: 1px solid #ddd; background: #f5f5f5; color: #666;
+    padding: 1px 5px; font-size: 10px; border-radius: 2px; cursor: pointer;
+    line-height: 1.4; flex-shrink: 0;
+  }
+  .tbl-col-btn:hover:not(:disabled) { background: #e8f0fe; border-color: #4285f4; color: #1a73e8; }
+  .tbl-col-btn:disabled { opacity: 0.3; cursor: default; }
+
   /* ── Dialog ── */
   #dlg-overlay {
     display: none; position: absolute; inset: 0;
@@ -1189,6 +1206,7 @@ class ReportDesigner extends HTMLElement {
       inner.style.flexDirection = 'column';
       inner.style.fontSize      = '10px';
       inner.style.overflow      = 'hidden';
+      inner.innerHTML = '';
       const cols = item.columns;
       if (cols.length === 0) {
         inner.textContent = `⊞ ${item.dataSetName || 'Table (no columns)'}`;
@@ -1487,11 +1505,21 @@ class ReportDesigner extends HTMLElement {
 
     if (item.type === 'Table') {
       const dsetOpts = ['', ...this._report.dataSets.map(d => d.name)];
+      const last = item.columns.length - 1;
+      const colRows = item.columns.map((col, i) =>
+        `<div class="tbl-col-row">
+          <span class="tbl-col-name" title="${escHtml(col.fieldExpr)}">${escHtml(col.header)}</span>
+          <button class="tbl-col-btn" data-act="up"  data-ci="${i}"${i === 0    ? ' disabled' : ''}>▲</button>
+          <button class="tbl-col-btn" data-act="dn"  data-ci="${i}"${i === last ? ' disabled' : ''}>▼</button>
+          <button class="tbl-col-btn" data-act="del" data-ci="${i}">✕</button>
+        </div>`
+      ).join('');
       groups.push(`<div class="pgroup">
         <div class="pgroup-title">Table</div>
         ${row('DataSet', sel('p-tablds', item.dataSetName, dsetOpts))}
         ${row('No Rows', txt('p-tablnorows', item.noRows))}
-        ${row('Columns', `<span style="font-size:11px;color:#666">${item.columns.length} col(s) — edit via data panel</span>`)}
+        <div class="pgroup-title" style="margin-top:6px">Columns</div>
+        <div id="p-tbl-cols">${colRows || '<span style="font-size:11px;color:#aaa">No columns</span>'}</div>
       </div>`);
     }
 
@@ -1553,8 +1581,28 @@ class ReportDesigner extends HTMLElement {
       on('p-chartpalette', e => { item.palette       = e.target.value; });
     }
     if (item.type === 'Table') {
-      on('p-tablds',      e => { item.dataSetName = e.target.value; this._syncItemEl(item); });
-      on('p-tablnorows',  e => { item.noRows      = e.target.value; });
+      on('p-tablds',     e => { item.dataSetName = e.target.value; this._syncItemEl(item); });
+      on('p-tablnorows', e => { item.noRows      = e.target.value; });
+
+      const colsEl = content.querySelector('#p-tbl-cols');
+      if (colsEl) {
+        colsEl.addEventListener('click', e => {
+          const btn = e.target.closest('.tbl-col-btn');
+          if (!btn) return;
+          const i   = parseInt(btn.dataset.ci, 10);
+          const act = btn.dataset.act;
+          if (act === 'up' && i > 0) {
+            [item.columns[i - 1], item.columns[i]] = [item.columns[i], item.columns[i - 1]];
+          } else if (act === 'dn' && i < item.columns.length - 1) {
+            [item.columns[i + 1], item.columns[i]] = [item.columns[i], item.columns[i + 1]];
+          } else if (act === 'del') {
+            item.columns.splice(i, 1);
+            item.width = item.columns.reduce((s, c) => s + (c.width || 1.5), 0) || 1.5;
+          }
+          this._syncItemEl(item);
+          this._updatePropsPanel();
+        });
+      }
     }
   }
 
