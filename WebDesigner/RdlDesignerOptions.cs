@@ -13,4 +13,7 @@ public sealed class RdlDesignerOptions
 
     /// <summary>When false the load endpoint returns 403.</summary>
     public bool AllowLoad { get; set; } = true;
+
+    /// <summary>When false the schema-discovery endpoint returns 403.</summary>
+    public bool AllowSchema { get; set; } = true;
 }

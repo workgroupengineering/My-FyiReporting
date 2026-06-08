@@ -9,6 +9,9 @@
 
 const DPI = 96; // logical inches → screen pixels at 100 % zoom
 
+// Providers that support schema discovery via the /schema endpoint.
+const FILE_PROVIDERS = new Set(['json', 'text', 'xml', 'filedirectory']);
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function esc(s) {
@@ -114,6 +117,17 @@ class RdlChart extends RdlItem {
   }
 }
 
+class RdlTable extends RdlItem {
+  constructor(name) {
+    super('Table', name);
+    this.dataSetName = '';
+    this.noRows      = 'Query returned no rows!';
+    this.columns     = []; // [{header, fieldExpr, width}]
+    this.height      = 0.6;
+    this.style.borderStyle = 'Solid';
+  }
+}
+
 // ── Data model ────────────────────────────────────────────────────────────────
 
 class RdlField {
@@ -171,6 +185,7 @@ class RdlReport {
       case 'Line':      item = new RdlLine(this._nextName('Line'));           break;
       case 'Image':     item = new RdlImage(this._nextName('Image'));         break;
       case 'Chart':     item = new RdlChart(this._nextName('Chart'));         break;
+      case 'Table':     item = new RdlTable(this._nextName('Table'));         break;
       default:          item = new RdlItem(type, this._nextName(type));       break;
     }
     this.items.push(item);
@@ -182,7 +197,8 @@ class RdlReport {
 
 // ── RDL Serializer ────────────────────────────────────────────────────────────
 
-const NS = 'http://schemas.microsoft.com/sqlserver/reporting/2003/10/reportdefinition';
+const NS    = 'http://schemas.microsoft.com/sqlserver/reporting/2005/01/reportdefinition';
+const NS_RD = 'http://schemas.microsoft.com/SQLServer/reporting/reportdesigner';
 
 const RdlSerializer = {
   in4(v) { return typeof v === 'number' ? v.toFixed(4) + 'in' : String(v); },
@@ -191,7 +207,7 @@ const RdlSerializer = {
     const n = v => this.in4(v);
     const lines = [
       `<?xml version="1.0" encoding="UTF-8"?>`,
-      `<Report xmlns="${NS}">`,
+      `<Report xmlns="${NS}" xmlns:rd="${NS_RD}">`,
       `  <Width>${n(r.pageWidth)}</Width>`,
       `  <PageWidth>${n(r.pageWidth)}</PageWidth>`,
       `  <PageHeight>${n(r.pageHeight)}</PageHeight>`,
@@ -221,11 +237,17 @@ const RdlSerializer = {
     if (r.dataSets.length > 0) {
       lines.push(`  <DataSets>`);
       for (const ds of r.dataSets) {
+        // Resolve data provider to skip CommandType for providers that ignore it
+        const srcForDs2 = r.dataSources.find(d => d.name === ds.dataSourceName);
+        const isFileProv = srcForDs2 && FILE_PROVIDERS.has(srcForDs2.dataProvider.toLowerCase());
         lines.push(
           `    <DataSet Name="${esc(ds.name)}">`,
           `      <Query>`,
           `        <DataSourceName>${esc(ds.dataSourceName)}</DataSourceName>`,
-          `        <CommandType>${esc(ds.commandType)}</CommandType>`,
+        );
+        if (!isFileProv)
+          lines.push(`        <CommandType>${esc(ds.commandType)}</CommandType>`);
+        lines.push(
           `        <CommandText>${esc(ds.commandText)}</CommandText>`,
           `      </Query>`,
         );
@@ -235,7 +257,7 @@ const RdlSerializer = {
             lines.push(
               `        <Field Name="${esc(f.name)}">`,
               `          <DataField>${esc(f.dataField)}</DataField>`,
-              `          <TypeName>${esc(f.typeName)}</TypeName>`,
+              `          <rd:TypeName>${esc(f.typeName)}</rd:TypeName>`,
               `        </Field>`,
             );
           }
@@ -274,6 +296,48 @@ const RdlSerializer = {
             `        <Source>${esc(it.source)}</Source>`,
             `        <Value>${esc(it.value)}</Value>`,
           );
+        }
+        if (it.type === 'Table') {
+          if (it.dataSetName) lines.push(`        <DataSetName>${esc(it.dataSetName)}</DataSetName>`);
+          if (it.noRows)      lines.push(`        <NoRows>${esc(it.noRows)}</NoRows>`);
+          lines.push(`        <Style><BorderStyle><Default>Solid</Default></BorderStyle></Style>`);
+          const colW = it.columns.length > 0 ? (it.width / it.columns.length) : 1.5;
+          lines.push(`        <TableColumns>`);
+          for (const col of it.columns)
+            lines.push(`          <TableColumn><Width>${n(col.width || colW)}</Width></TableColumn>`);
+          lines.push(`        </TableColumns>`);
+          // Header row
+          lines.push(
+            `        <Header><TableRows><TableRow><Height>0.25in</Height><TableCells>`,
+          );
+          for (let i = 0; i < it.columns.length; i++) {
+            const hname = esc(`${it.name}_H${i}`);
+            lines.push(
+              `          <TableCell><ReportItems><Textbox Name="${hname}">`,
+              `            <Value>${esc(it.columns[i].header)}</Value>`,
+              `            <Style><FontWeight>Bold</FontWeight><TextAlign>Center</TextAlign>`,
+              `              <BorderStyle><Default>Solid</Default></BorderStyle></Style>`,
+              `          </Textbox></ReportItems></TableCell>`,
+            );
+          }
+          lines.push(`        </TableCells></TableRow></TableRows></Header>`);
+          // Details row
+          lines.push(
+            `        <Details><TableRows><TableRow><Height>0.25in</Height><TableCells>`,
+          );
+          for (let i = 0; i < it.columns.length; i++) {
+            const dname = esc(`${it.name}_D${i}`);
+            lines.push(
+              `          <TableCell><ReportItems><Textbox Name="${dname}">`,
+              `            <Value>${esc(it.columns[i].fieldExpr)}</Value>`,
+              `            <CanGrow>true</CanGrow>`,
+              `            <Style><BorderStyle><Default>Solid</Default></BorderStyle></Style>`,
+              `          </Textbox></ReportItems></TableCell>`,
+            );
+          }
+          lines.push(`        </TableCells></TableRow></TableRows></Details>`);
+          lines.push(`      </Table>`);
+          continue;
         }
         if (it.type === 'Chart') {
           if (it.dataSetName) lines.push(`        <DataSetName>${esc(it.dataSetName)}</DataSetName>`);
@@ -416,7 +480,9 @@ const RdlSerializer = {
       for (const fEl of dsEl.querySelectorAll('Fields > Field')) {
         const f = new RdlField(fEl.getAttribute('Name') || 'Field');
         f.dataField = text(fEl, 'DataField', f.name);
-        f.typeName  = text(fEl, 'TypeName', 'System.String');
+        // Handle both <TypeName> and <rd:TypeName> (Microsoft designer format)
+        const tnEl = fEl.querySelector('TypeName') || [...fEl.children].find(c => c.localName === 'TypeName');
+        f.typeName = tnEl ? tnEl.textContent.trim() : 'System.String';
         ds.fields.push(f);
       }
       r.dataSets.push(ds);
@@ -463,11 +529,34 @@ const RdlSerializer = {
             if (bsEl) item.style.borderStyle = bsEl.textContent.trim();
             break;
           }
+          case 'Table': {
+            item = new RdlTable(name);
+            item.dataSetName = text(el, 'DataSetName', '');
+            item.noRows      = text(el, 'NoRows', 'Query returned no rows!');
+            // Read columns from TableColumns + Header + Details
+            const colEls  = [...el.querySelectorAll('TableColumns > TableColumn')];
+            const hdrCells = [...el.querySelectorAll('Header TableCell')];
+            const detCells = [...el.querySelectorAll('Details TableCell')];
+            const count = colEls.length || Math.max(hdrCells.length, detCells.length);
+            item.columns = [];
+            for (let i = 0; i < count; i++) {
+              const colEl = colEls[i];
+              const w = colEl ? inch(colEl, 'Width', 1.5) : 1.5;
+              const header    = hdrCells[i] ? (hdrCells[i].querySelector('Textbox Value')?.textContent.trim() || '') : '';
+              const fieldExpr = detCells[i] ? (detCells[i].querySelector('Textbox Value')?.textContent.trim() || '') : '';
+              item.columns.push({ header, fieldExpr, width: w });
+            }
+            if (item.columns.length > 0)
+              item.width = item.columns.reduce((s, c) => s + (c.width || 1.5), 0);
+            break;
+          }
           default: continue;
         }
         item.top    = inch(el, 'Top',    0.5);
         item.left   = inch(el, 'Left',   0.5);
-        item.width  = inch(el, 'Width',  2.0);
+        // For Table: prefer column-sum width; only override if XML has an explicit <Width> child
+        if (!(item.type === 'Table' && item.width > 0 && !el.querySelector(':scope > Width')))
+          item.width = inch(el, 'Width', 2.0);
         item.height = inch(el, 'Height', 0.25);
 
         const s = el.querySelector('Style');
@@ -769,6 +858,9 @@ const SHADOW_HTML = /* html */`
     <div class="tool-item" draggable="true" data-type="Chart">
       <span class="tool-icon">📊</span>Chart
     </div>
+    <div class="tool-item" draggable="true" data-type="Table">
+      <span class="tool-icon">⊞</span>Table
+    </div>
   </div>
 
   <!-- Canvas -->
@@ -817,6 +909,8 @@ const SHADOW_HTML = /* html */`
       <div class="data-section" id="fields-section" style="display:none">
         <div class="data-section-head">
           <span class="data-section-title" id="fields-title">Fields</span>
+          <button class="data-add-btn" id="btn-discover-fields" title="Auto-discover fields from data source">↺</button>
+          <button class="data-add-btn" id="btn-insert-table" title="Insert table for this dataset onto canvas">⊞</button>
           <button class="data-add-btn" id="btn-add-field">+</button>
         </div>
         <div id="field-list"></div>
@@ -968,15 +1062,32 @@ class ReportDesigner extends HTMLElement {
       const left  = snap(clamp((e.clientX - rect.left) / scale, 0, this._report.bodyWidth  - 0.25));
       const top   = snap(clamp((e.clientY - rect.top)  / scale, 0, this._report.bodyHeight - 0.1));
 
-      // Field dragged from data panel → create TextBox with field expression
-      const fieldRef = e.dataTransfer.getData('rdl/field');
+      // Field dragged from data panel → add to or create a Table data region
+      const fieldRef    = e.dataTransfer.getData('rdl/field');
+      const fieldDsName = e.dataTransfer.getData('rdl/fieldset');
       if (fieldRef) {
-        const item = this._report.createItem('Textbox');
-        item.left  = left;
-        item.top   = top;
-        item.value = `=Fields!${fieldRef}.Value`;
-        this._refreshCanvas();
-        this._select(item.name);
+        const existing = fieldDsName
+          ? this._report.items.find(i => i.type === 'Table' && i.dataSetName === fieldDsName)
+          : null;
+        if (existing) {
+          // Add as a new column to the existing table
+          const perCol = existing.width / Math.max(1, existing.columns.length);
+          existing.columns.push({ header: fieldRef, fieldExpr: `=Fields!${fieldRef}.Value`, width: perCol });
+          existing.width = perCol * existing.columns.length;
+          this._refreshCanvas();
+          this._select(existing.name);
+        } else {
+          // Create a new single-column Table
+          const tbl = this._report.createItem('Table');
+          tbl.left        = left;
+          tbl.top         = top;
+          tbl.dataSetName = fieldDsName || '';
+          tbl.columns     = [{ header: fieldRef, fieldExpr: `=Fields!${fieldRef}.Value`, width: 1.5 }];
+          tbl.width       = 1.5;
+          tbl.height      = 0.6;
+          this._refreshCanvas();
+          this._select(tbl.name);
+        }
         return;
       }
 
@@ -1071,6 +1182,38 @@ class ReportDesigner extends HTMLElement {
       inner.style.color          = '#aaa';
       inner.style.fontSize       = '11px';
       inner.textContent          = item.value ? `🖼 ${item.value}` : '🖼 Image';
+
+    } else if (item.type === 'Table') {
+      el.style.border = '1px solid #bbb';
+      el.style.background = '#fff';
+      inner.style.flexDirection = 'column';
+      inner.style.fontSize      = '10px';
+      inner.style.overflow      = 'hidden';
+      const cols = item.columns;
+      if (cols.length === 0) {
+        inner.textContent = `⊞ ${item.dataSetName || 'Table (no columns)'}`;
+        inner.style.alignItems = 'center';
+        inner.style.justifyContent = 'center';
+        inner.style.color = '#999';
+      } else {
+        const colPct = (100 / cols.length).toFixed(1) + '%';
+        const hrow = document.createElement('div');
+        hrow.style.cssText = 'display:flex;width:100%;background:#e8e8e8;border-bottom:1px solid #bbb;flex-shrink:0;';
+        const drow = document.createElement('div');
+        drow.style.cssText = 'display:flex;width:100%;flex-shrink:0;';
+        for (const col of cols) {
+          const hcell = document.createElement('div');
+          hcell.style.cssText = `width:${colPct};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:1px 2px;border-right:1px solid #ccc;font-weight:bold;`;
+          hcell.textContent = col.header;
+          hrow.appendChild(hcell);
+          const dcell = document.createElement('div');
+          dcell.style.cssText = `width:${colPct};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:1px 2px;border-right:1px solid #ccc;color:#4285f4;`;
+          dcell.textContent = col.fieldExpr.replace(/^=Fields!(.+)\.Value$/, '$1');
+          drow.appendChild(dcell);
+        }
+        inner.appendChild(hrow);
+        inner.appendChild(drow);
+      }
 
     } else if (item.type === 'Chart') {
       el.style.background = item.style.backgroundColor || '#fff';
@@ -1342,6 +1485,16 @@ class ReportDesigner extends HTMLElement {
       </div>`);
     }
 
+    if (item.type === 'Table') {
+      const dsetOpts = ['', ...this._report.dataSets.map(d => d.name)];
+      groups.push(`<div class="pgroup">
+        <div class="pgroup-title">Table</div>
+        ${row('DataSet', sel('p-tablds', item.dataSetName, dsetOpts))}
+        ${row('No Rows', txt('p-tablnorows', item.noRows))}
+        ${row('Columns', `<span style="font-size:11px;color:#666">${item.columns.length} col(s) — edit via data panel</span>`)}
+      </div>`);
+    }
+
     content.innerHTML = groups.join('');
     this._bindPropsInputs(item);
   }
@@ -1399,6 +1552,10 @@ class ReportDesigner extends HTMLElement {
       on('p-chartnorows',  e => { item.noRows        = e.target.value; });
       on('p-chartpalette', e => { item.palette       = e.target.value; });
     }
+    if (item.type === 'Table') {
+      on('p-tablds',      e => { item.dataSetName = e.target.value; this._syncItemEl(item); });
+      on('p-tablnorows',  e => { item.noRows      = e.target.value; });
+    }
   }
 
   _updatePropsInputs(item) {
@@ -1415,6 +1572,12 @@ class ReportDesigner extends HTMLElement {
     this._$('btn-add-dset').onclick  = () => this._showAddDataSetDialog();
     this._$('btn-add-field').onclick = () => {
       if (this._selDataSet) this._showAddFieldDialog(this._selDataSet);
+    };
+    this._$('btn-discover-fields').onclick = () => {
+      if (this._selDataSet) this._discoverFields(this._selDataSet);
+    };
+    this._$('btn-insert-table').onclick = () => {
+      if (this._selDataSet) this._insertTableFromDataset(this._selDataSet);
     };
   }
 
@@ -1475,7 +1638,8 @@ class ReportDesigner extends HTMLElement {
           <button class="data-row-del" title="Remove">✕</button>`;
 
         row.addEventListener('dragstart', e => {
-          e.dataTransfer.setData('rdl/field', f.name);
+          e.dataTransfer.setData('rdl/field',    f.name);
+          e.dataTransfer.setData('rdl/fieldset', dset.name);
           e.dataTransfer.effectAllowed = 'copy';
         });
         row.querySelector('.data-row-del').addEventListener('click', () => {
@@ -1491,13 +1655,34 @@ class ReportDesigner extends HTMLElement {
 
   // ── Data CRUD ─────────────────────────────────────────────────────────────────
 
+  // Connection-string placeholder text keyed by provider name (case-insensitive lookup below).
+  static _CONN_HINTS = {
+    SQL:        'Server=myserver;Database=mydb;User Id=myuser;Password=mypass',
+    SQLite:     'Data Source=/path/to/database.db',
+    PostgreSQL: 'Host=myserver;Database=mydb;Username=myuser;Password=mypass',
+    MySQL:      'Server=myserver;Database=mydb;Uid=myuser;Pwd=mypass',
+    Oracle:     'Data Source=myserver/mydb;User Id=myuser;Password=mypass',
+    ODBC:       'DSN=mydsn;Uid=myuser;Pwd=mypass',
+    OleDb:      'Provider=SQLOLEDB;Data Source=myserver;Initial Catalog=mydb;User Id=myuser;Password=mypass',
+    Json:       'file=/path/to/data.json\n— or —\nurl=https://example.com/data.json\n— or —\nurl=https://example.com/data.json;auth=Bearer: <token>',
+  };
+
   _showAddDataSourceDialog() {
     const dsNames = this._report.dataSources.map(d => d.name);
+    const hints   = ReportDesigner._CONN_HINTS;
     this._dialog('Add Data Source', [
-      { label: 'Name',              id: 'f-dsname',  type: 'text',   value: `DataSource${dsNames.length + 1}` },
-      { label: 'Data Provider',     id: 'f-dsprov',  type: 'select', options: ['SQL','ODBC','OleDb','SQLite','PostgreSQL','MySQL','Oracle'], value: 'SQL' },
-      { label: 'Connection String', id: 'f-dsconn',  type: 'textarea', value: '' },
-    ]).then(vals => {
+      { label: 'Name',              id: 'f-dsname',  type: 'text',     value: `DataSource${dsNames.length + 1}` },
+      { label: 'Data Provider',     id: 'f-dsprov',  type: 'select',   options: ['SQL','ODBC','OleDb','SQLite','PostgreSQL','MySQL','Oracle','Json'], value: 'SQL' },
+      { label: 'Connection String', id: 'f-dsconn',  type: 'textarea', value: '', placeholder: hints['SQL'] },
+    ], (bodyEl) => {
+      const provSel = bodyEl.querySelector('#f-dsprov');
+      const connTa  = bodyEl.querySelector('#f-dsconn');
+      const updateHint = () => {
+        connTa.placeholder = hints[provSel.value] || '';
+      };
+      provSel.addEventListener('change', updateHint);
+      updateHint();
+    }).then(vals => {
       if (!vals) return;
       if (!vals['f-dsname']) return;
       const ds = new RdlDataSource(vals['f-dsname']);
@@ -1517,12 +1702,42 @@ class ReportDesigner extends HTMLElement {
     const dsNames   = this._report.dataSources.map(d => d.name);
     const dsetNames = this._report.dataSets.map(d => d.name);
     const dsOpts    = dsNames.length ? dsNames : ['(none)'];
+    const sources   = this._report.dataSources; // for provider lookup in onShown
+
     this._dialog('Add Data Set', [
-      { label: 'Name',        id: 'f-dsetname', type: 'text',   value: `DataSet${dsetNames.length + 1}` },
-      { label: 'Data Source', id: 'f-dsetsrc',  type: 'select', options: dsOpts, value: dsOpts[0] },
-      { label: 'Command Type', id: 'f-dsetctype', type: 'select', options: ['Text','StoredProcedure','TableDirect'], value: 'Text' },
-      { label: 'Query',       id: 'f-dsetq',    type: 'textarea', value: 'SELECT * FROM ' },
-    ]).then(vals => {
+      { label: 'Name',         id: 'f-dsetname',  type: 'text',     value: `DataSet${dsetNames.length + 1}` },
+      { label: 'Data Source',  id: 'f-dsetsrc',   type: 'select',   options: dsOpts, value: dsOpts[0] },
+      { label: 'Command Type', id: 'f-dsetctype', type: 'select',   options: ['Text','StoredProcedure','TableDirect'], value: 'Text' },
+      { label: 'Query',        id: 'f-dsetq',     type: 'textarea', value: 'SELECT * FROM ',
+        placeholder: 'SQL query  — or for Json:  columns=Field1,Field2' },
+    ], (bodyEl) => {
+      const srcSel    = bodyEl.querySelector('#f-dsetsrc');
+      const ctypeSel  = bodyEl.querySelector('#f-dsetctype');
+      const queryTa   = bodyEl.querySelector('#f-dsetq');
+      const SQL_DEFAULT  = 'SELECT * FROM ';
+      const JSON_DEFAULT = 'columns=';
+      const JSON_HINT    = 'columns=Field1,Field2\n— or with a named array —\ntable=ArrayName;columns=Field1,Field2';
+
+      const updateForSource = () => {
+        const src = sources.find(d => d.name === srcSel.value);
+        const isJson = src?.dataProvider?.toLowerCase() === 'json';
+        if (isJson) {
+          queryTa.placeholder = JSON_HINT;
+          ctypeSel.disabled   = true;
+          // Only replace the value if it still holds the SQL default.
+          if (!queryTa.value || queryTa.value === SQL_DEFAULT)
+            queryTa.value = JSON_DEFAULT;
+        } else {
+          queryTa.placeholder = 'SQL query  — or for Json:  columns=Field1,Field2';
+          ctypeSel.disabled   = false;
+          if (!queryTa.value || queryTa.value === JSON_DEFAULT)
+            queryTa.value = SQL_DEFAULT;
+        }
+      };
+
+      srcSel.addEventListener('change', updateForSource);
+      updateForSource();
+    }).then(vals => {
       if (!vals) return;
       if (!vals['f-dsetname']) return;
       const ds = new RdlDataSet(vals['f-dsetname']);
@@ -1532,6 +1747,11 @@ class ReportDesigner extends HTMLElement {
       this._report.dataSets.push(ds);
       this._selDataSet = ds.name;
       this._refreshDataPanel();
+      // Auto-discover fields for file-based providers that support schema discovery.
+      const srcForDs = this._report.dataSources.find(d => d.name === ds.dataSourceName);
+      if (srcForDs && FILE_PROVIDERS.has(srcForDs.dataProvider.toLowerCase())) {
+        this._discoverFields(ds.name);
+      }
     });
   }
 
@@ -1564,6 +1784,75 @@ class ReportDesigner extends HTMLElement {
     const ds = this._report.dataSets.find(d => d.name === dataSetName);
     if (ds) ds.fields = ds.fields.filter(f => f.name !== fieldName);
     this._refreshDataPanel();
+  }
+
+  async _discoverFields(dataSetName) {
+    const previewEp = this.getAttribute('preview-endpoint');
+    if (!previewEp) { alert('preview-endpoint attribute not set.'); return; }
+    const schemaEp = previewEp.replace(/\/[^/]+$/, '/schema');
+
+    const dset = this._report.dataSets.find(d => d.name === dataSetName);
+    if (!dset) return;
+    const src  = this._report.dataSources.find(d => d.name === dset.dataSourceName);
+    if (!src)  { alert(`Data source '${dset.dataSourceName}' not found.`); return; }
+
+    const discoverBtn = this._$('btn-discover-fields');
+    const origText = discoverBtn.textContent;
+    discoverBtn.textContent = '…';
+    discoverBtn.disabled = true;
+
+    try {
+      const resp = await fetch(schemaEp, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          dataProvider:     src.dataProvider,
+          connectionString: src.connectString,
+          commandText:      dset.commandText,
+        }),
+      });
+      if (!resp.ok) {
+        const msg = await resp.text();
+        alert(`Field discovery failed:\n${msg}`);
+        return;
+      }
+      const { fields } = await resp.json();
+      if (!fields?.length) { alert('No fields returned — check your connection string and query.'); return; }
+      dset.fields = fields.map(f => {
+        const fld = new RdlField(f.name, f.name);
+        fld.typeName = f.typeName || 'System.String';
+        return fld;
+      });
+      this._refreshDataPanel();
+    } catch (err) {
+      alert(`Field discovery error:\n${err.message}`);
+    } finally {
+      discoverBtn.textContent = origText;
+      discoverBtn.disabled = false;
+    }
+  }
+
+  _insertTableFromDataset(dataSetName) {
+    const dset = this._report.dataSets.find(d => d.name === dataSetName);
+    if (!dset) return;
+    if (dset.fields.length === 0) {
+      alert('No fields defined for this dataset. Use ↺ to discover fields or + to add them manually first.');
+      return;
+    }
+    const tbl = this._report.createItem('Table');
+    tbl.dataSetName = dataSetName;
+    const colW = Math.max(0.8, Math.min(2.0, (this._report.bodyWidth * 0.9) / dset.fields.length));
+    tbl.columns = dset.fields.map(f => ({
+      header:    f.name,
+      fieldExpr: `=Fields!${f.name}.Value`,
+      width:     colW,
+    }));
+    tbl.width  = colW * dset.fields.length;
+    tbl.height = 0.6;
+    tbl.left   = 0;
+    tbl.top    = snap(0.5);
+    this._refreshCanvas();
+    this._select(tbl.name);
   }
 
   // ── Toolbar actions ──────────────────────────────────────────────────────────
@@ -1679,10 +1968,12 @@ class ReportDesigner extends HTMLElement {
 
   /**
    * Show a dialog with multiple labelled inputs.
-   * fields: Array of {label, id, type, value, options?}
+   * fields: Array of {label, id, type, value, options?, placeholder?}
+   * onShown: optional (bodyEl) => void — called after the dialog is rendered,
+   *   useful for wiring inter-field behaviour (e.g. provider-dependent hints).
    * Resolves with {id: value, ...} or null if cancelled.
    */
-  _dialog(title, fields) {
+  _dialog(title, fields, onShown) {
     return new Promise(resolve => {
       const overlay = this._$('dlg-overlay');
       this._$('dlg-title').textContent = title;
@@ -1690,14 +1981,15 @@ class ReportDesigner extends HTMLElement {
       const bodyEl = this._$('dlg-body');
       bodyEl.innerHTML = fields.map(f => {
         let input;
+        const ph = f.placeholder ? ` placeholder="${escHtml(f.placeholder)}"` : '';
         if (f.type === 'select') {
           input = `<select id="${f.id}">${(f.options || []).map(o =>
             `<option${o === f.value ? ' selected' : ''}>${escHtml(o)}</option>`
           ).join('')}</select>`;
         } else if (f.type === 'textarea') {
-          input = `<textarea id="${f.id}" rows="3">${escHtml(f.value || '')}</textarea>`;
+          input = `<textarea id="${f.id}" rows="3"${ph}>${escHtml(f.value || '')}</textarea>`;
         } else {
-          input = `<input type="text" id="${f.id}" value="${escHtml(f.value || '')}">`;
+          input = `<input type="text" id="${f.id}" value="${escHtml(f.value || '')}"${ph}>`;
         }
         return `<label>${escHtml(f.label)}${input}</label>`;
       }).join('');
@@ -1705,6 +1997,7 @@ class ReportDesigner extends HTMLElement {
       overlay.classList.add('open');
       const firstInput = bodyEl.querySelector('input, select, textarea');
       if (firstInput) firstInput.focus();
+      if (typeof onShown === 'function') onShown(bodyEl);
 
       const okBtn     = this._$('dlg-ok');
       const cancelBtn = this._$('dlg-cancel');

@@ -131,10 +131,82 @@ public static class DesignerEndpoints
             return Results.Ok(new { saved = safeName });
         });
 
+        // ── Schema ────────────────────────────────────────────────────────────
+        app.MapPost($"/{prefix}/schema", async (HttpRequest req) =>
+        {
+            if (!options.AllowSchema)
+                return Results.Forbid();
+
+            RdlSchemaRequest? body;
+            try
+            {
+                body = await JsonSerializer.DeserializeAsync<RdlSchemaRequest>(
+                    req.Body,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch
+            {
+                return Results.BadRequest(
+                    "Expected JSON body: {\"dataProvider\":\"...\",\"connectionString\":\"...\",\"commandText\":\"...\"}");
+            }
+
+            if (body is null
+                || string.IsNullOrWhiteSpace(body.DataProvider)
+                || string.IsNullOrWhiteSpace(body.ConnectionString))
+                return Results.BadRequest("dataProvider and connectionString are required.");
+
+            try
+            {
+                var conn = RdlEngineConfig.GetConnection(
+                    body.DataProvider.Trim(), body.ConnectionString.Trim());
+
+                if (conn is null)
+                    return Results.BadRequest($"Unknown data provider '{body.DataProvider}'.");
+
+                conn.Open();
+                using (conn as IDisposable) // dispose if provider implements it
+                {
+                    var cmd = conn.CreateCommand();
+                    cmd.CommandText = body.CommandText ?? string.Empty;
+
+                    using var reader = cmd.ExecuteReader(System.Data.CommandBehavior.SchemaOnly);
+
+                    // Advance to first row so GetFieldType returns actual CLR types.
+                    bool hasRows = reader.Read();
+
+                    var fields = new List<object>();
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        var name = reader.GetName(i);
+                        if (name.StartsWith("__")) continue; // skip internal tracking columns
+                        var clrType = hasRows ? reader.GetFieldType(i) : null;
+                        fields.Add(new { name, typeName = MapClrType(clrType) });
+                    }
+
+                    return Results.Ok(new { fields });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 400);
+            }
+        });
+
         return app;
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private static string MapClrType(Type? t) => t?.FullName switch
+    {
+        "System.Int32"    => "System.Int32",
+        "System.Int64"    => "System.Int64",
+        "System.Double"   => "System.Double",
+        "System.Decimal"  => "System.Decimal",
+        "System.Boolean"  => "System.Boolean",
+        "System.DateTime" => "System.DateTime",
+        _                 => "System.String",
+    };
 
     private static void EnsureEngineConfig()
     {
@@ -160,4 +232,11 @@ internal sealed class RdlSaveRequest
 {
     public string Name { get; set; } = string.Empty;
     public string Rdl  { get; set; } = string.Empty;
+}
+
+internal sealed class RdlSchemaRequest
+{
+    public string  DataProvider    { get; set; } = string.Empty;
+    public string  ConnectionString { get; set; } = string.Empty;
+    public string? CommandText      { get; set; }
 }
