@@ -1,5 +1,5 @@
 <Project>
-  <PropertyGroup Condition="'$(Configuration)' == 'Release-DrawingCompat' Or '$(Configuration)' == 'Debug-DrawingCompat'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release-DrawingCompat' Or '$(Configuration)' == 'Debug-DrawingCompat' Or '$(OS)' != 'Windows_NT'">
     <DefineConstants>DRAWINGCOMPAT</DefineConstants>
   </PropertyGroup>
 
