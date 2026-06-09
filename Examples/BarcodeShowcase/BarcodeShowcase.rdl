@@ -126,7 +126,7 @@
       </Textbox>
       <CustomReportItem Name="CRI_DM">
         <Type>DataMatrix</Type>
-        <Top>0.42in</Top><Left>4in</Left><Width>1.4in</Width><Height>1.4in</Height>
+        <Top>0.42in</Top><Left>4in</Left><Width>2.5in</Width><Height>1.2in</Height>
         <CustomProperties>
           <CustomProperty>
             <Name>Code</Name>
