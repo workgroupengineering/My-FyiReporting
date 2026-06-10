@@ -26,7 +26,7 @@ namespace Majorsilence.Reporting.Rdl
     [Serializable]
 	internal class CustomReportItem : Rectangle
 	{
-        static readonly ImageFormat IMAGEFORMAT = ImageFormat.Jpeg;
+        static readonly ImageFormat IMAGEFORMAT = ImageFormat.Png;
         string _Type;   // The type of the custom report item. Interpreted by a
 						// report design tool or server.
                         private Expression _typeExpression=null;
@@ -154,7 +154,7 @@ namespace Majorsilence.Reporting.Rdl
 				encoderParameters.Param[0] = new Draw2.Imaging.EncoderParameter(Draw2.Imaging.Encoder.Quality, ImageQualityManager.CustomImageQuality);
 				ImageCodecInfo codec = null;
 				for(int i = 0; i < info.Length; i++) {
-					if(info[i].FormatDescription == "JPEG") {
+					if(info[i].FormatDescription == "PNG") {
 						codec = info[i];
 						break;
 					}
@@ -210,7 +210,7 @@ namespace Majorsilence.Reporting.Rdl
                 Draw2.Imaging.EncoderParameters encoderParameters = new Draw2.Imaging.EncoderParameters(1);
                 // 20022008 AJM GJL - Using centralised image quality
                 encoderParameters.Param[0] = new Draw2.Imaging.EncoderParameter(Draw2.Imaging.Encoder.Quality, ImageQualityManager.CustomImageQuality);
-                ImageCodecInfo codec = ImageCodecInfo.GetImageEncoders().First(x => x.FormatDescription == "JPEG");
+                ImageCodecInfo codec = ImageCodecInfo.GetImageEncoders().First(x => x.FormatDescription == "PNG");
 
                 PageImage pi = new PageImage(IMAGEFORMAT, 
                     ((format, width, height) => GenerateImage(codec, encoderParameters, width, height, cri)),
