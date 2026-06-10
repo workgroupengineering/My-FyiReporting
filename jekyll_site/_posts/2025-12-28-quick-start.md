@@ -7,8 +7,6 @@ comments: true
 enable_syntax_highlighting: true
 ---
 
-<div class="prose">
-
 Majorsilence Reporting is an open-source .NET reporting framework for generating PDFs, Excel files, HTML, CSV, and more from SQL databases, JSON files, or C# objects. It runs cross-platform on .NET 8 and .NET 10, and is built around the open RDL (Report Definition Language) standard.
 
 ## Installation
@@ -237,5 +235,3 @@ await report.RunRender(ofs, Majorsilence.Reporting.Rdl.OutputPresentationType.PD
 - [JSON Data Provider](https://github.com/majorsilence/Reporting/wiki/Json-Data-Provider)
 - [Dynamic connection strings](https://github.com/majorsilence/Reporting/wiki/Set-Connection-String---Runtime)
 - [Contributing](https://github.com/majorsilence/Reporting/wiki/Contribute)
-
-</div>
