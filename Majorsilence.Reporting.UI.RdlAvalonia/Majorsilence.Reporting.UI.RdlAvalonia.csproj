@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFrameworks>net48;net8.0;net10.0</TargetFrameworks>
-        <TargetFrameworks Condition="'$(OS)' == 'Unix'">net8.0;net10.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
         <Nullable>enable</Nullable>
         <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
         <TrimMode>copyused</TrimMode>
@@ -27,9 +26,6 @@
 <PackageReference Include="Avalonia.Themes.Fluent" />
         <PackageReference Include="XamlNameReferenceGenerator" />
         <PackageReference Include="SkiaSharp" />
-    </ItemGroup>
-    <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-        <PackageReference Include="Microsoft.CSharp" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\RdlCri\Majorsilence.Reporting.RdlCri.csproj" />
