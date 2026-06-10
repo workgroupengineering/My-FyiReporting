@@ -1,28 +1,14 @@
-<header id="header">
-
-
-    <nav>
-        <a href="{{site.baseurl}}/">
-            <i aria-hidden="true"></i> Home
-        </a>
-        |
-        <a href="{{site.baseurl}}/posts">
-            <i aria-hidden="true"></i> Posts
-        </a>
-    </nav>
-
-    {% include search.html %}
-
-    <a href="#" class="logo">
-        <strong>{{ page.title }}</strong>
-
-        {% if page.date And page.date != "" And page.date != nil %}
-        <br />
-        Created <time datetime="date" itemprop="datePublished">{{ page.date }}</time>
-        {% endif %}
-        {% if page.last_modified And page.last_modified != "" And page.last_modified != nil %}
-        <br />
-        Last modified <time datetime="date" itemprop="datePublished">{{ page.last_modified }}</time>
-        {% endif %}
+<header class="site-header">
+  <div class="wrap">
+    <a href="{{ site.baseurl }}/" class="site-brand">
+      <span class="brand-icon">MR</span>
+      Majorsilence Reporting
     </a>
+    <nav class="site-nav">
+      <a href="{{ site.baseurl }}/">Home</a>
+      <a href="{{ site.baseurl }}/posts/">Blog</a>
+      <a href="https://github.com/majorsilence/Reporting/wiki" target="_blank" rel="noopener">Docs</a>
+      <a href="https://github.com/majorsilence/Reporting" target="_blank" rel="noopener" class="nav-cta">GitHub ↗</a>
+    </nav>
+  </div>
 </header>
