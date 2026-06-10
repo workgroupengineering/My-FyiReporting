@@ -81,7 +81,8 @@ namespace ReportTests.Utils
 #else
                     var reader = new ZXing.BarcodeReader();
 #endif
-                    using var ms = new MemoryStream(image.RawBytes.ToArray());
+                    var imageBytes = image.TryGetPng(out var pngBytes) ? pngBytes : image.RawBytes.ToArray();
+                    using var ms = new MemoryStream(imageBytes);
                     using var barcodeBitmap = new Bitmap(ms);
                     var result = reader.Decode(barcodeBitmap);
 
