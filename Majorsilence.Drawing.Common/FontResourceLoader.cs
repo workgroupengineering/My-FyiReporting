@@ -119,7 +119,11 @@ namespace Majorsilence.Drawing
                 // Reconstruct the filename from the last two dot-separated segments.
                 var parts = name.Split('.');
                 if (parts.Length < 2) continue;
+#if NET8_0_OR_GREATER
                 var filename = parts[^2] + "." + parts[^1]; // e.g. "LiberationSans-Regular.ttf"
+#else
+                var filename = parts[parts.Length - 2] + "." + parts[parts.Length - 1]; // e.g. "LiberationSans-Regular.ttf"
+#endif
 
                 var dest = Path.Combine(dir, filename);
                 if (File.Exists(dest)) continue;

@@ -124,12 +124,21 @@ namespace Majorsilence.Drawing.Drawing2D
         {
             float cx = rect.X + rect.Width / 2f;
             float cy = rect.Y + rect.Height / 2f;
+#if NET8_0_OR_GREATER
             float angleRad = angleDeg * MathF.PI / 180f;
             float cos = MathF.Cos(angleRad);
             float sin = MathF.Sin(angleRad);
 
             // Project half-diagonal onto gradient direction to ensure corners are covered
             float halfDiag = MathF.Sqrt(rect.Width * rect.Width + rect.Height * rect.Height) / 2f;
+#else
+            float angleRad = angleDeg * (float)Math.PI / 180f;
+            float cos = (float)Math.Cos(angleRad);
+            float sin = (float)Math.Sin(angleRad);
+
+            // Project half-diagonal onto gradient direction to ensure corners are covered
+            float halfDiag = (float)Math.Sqrt(rect.Width * rect.Width + rect.Height * rect.Height) / 2f;
+#endif
             pt1 = new SKPoint(cx - cos * halfDiag, cy - sin * halfDiag);
             pt2 = new SKPoint(cx + cos * halfDiag, cy + sin * halfDiag);
         }

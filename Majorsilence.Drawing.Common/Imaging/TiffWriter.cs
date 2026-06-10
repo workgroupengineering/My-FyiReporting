@@ -50,7 +50,11 @@ namespace Majorsilence.Drawing.Imaging
         /// </summary>
         public void WritePage(SKBitmap bitmap, bool color, float dpiX, float dpiY)
         {
+#if NET8_0_OR_GREATER
             ObjectDisposedException.ThrowIf(_disposed, this);
+#else
+            if (_disposed) throw new ObjectDisposedException(GetType().Name);
+#endif
 
             int width  = bitmap.Width;
             int height = bitmap.Height;
