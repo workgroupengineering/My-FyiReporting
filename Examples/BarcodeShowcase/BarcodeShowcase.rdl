@@ -40,7 +40,7 @@
   </PageHeader>
 
   <Body>
-    <Height>6in</Height>
+    <Height>7.5in</Height>
     <ReportItems>
 
       <!-- ===== LEFT COLUMN ===== -->
@@ -175,6 +175,28 @@
           <CustomProperty>
             <Name>Code</Name>
             <Value>PDF417 Multi-Row Barcode Demo</Value>
+          </CustomProperty>
+        </CustomProperties>
+      </CustomReportItem>
+
+      <!-- Row 3 (full width): ITF-14 — note property name is ITF14, not Code, and value must be 13 or 14 digits -->
+      <Textbox Name="ITF14_Label">
+        <Top>6in</Top><Left>0in</Left><Width>7.5in</Width><Height>0.22in</Height>
+        <Value>ITF-14 (Interleaved 2 of 5)</Value>
+        <Style><FontWeight>Bold</FontWeight><FontSize>9pt</FontSize></Style>
+      </Textbox>
+      <Textbox Name="ITF14_Value">
+        <Top>6.23in</Top><Left>0in</Left><Width>7.5in</Width><Height>0.15in</Height>
+        <Value>12345678901231  (14 digits required)</Value>
+        <Style><FontSize>7pt</FontSize><Color>Gray</Color></Style>
+      </Textbox>
+      <CustomReportItem Name="CRI_ITF14">
+        <Type>ITF-14</Type>
+        <Top>6.42in</Top><Left>0in</Left><Width>3in</Width><Height>1.4in</Height>
+        <CustomProperties>
+          <CustomProperty>
+            <Name>ITF14</Name>
+            <Value>12345678901231</Value>
           </CustomProperty>
         </CustomProperties>
       </CustomReportItem>

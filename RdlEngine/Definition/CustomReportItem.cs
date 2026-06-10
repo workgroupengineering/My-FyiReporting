@@ -167,7 +167,8 @@ namespace Majorsilence.Reporting.Rdl
             }
             catch (Exception ex)
             {
-                rpt.rl.LogError(8, string.Format("Exception in CustomReportItem handling.\n{0}\n{1}", ex.Message, ex.StackTrace));
+                int severity = IsCriNativeLibraryException(ex) ? 4 : 8;
+                rpt.rl.LogError(severity, string.Format("Exception in CustomReportItem handling.\n{0}\n{1}", ex.Message, ex.StackTrace));
             }
             finally
             {
@@ -232,7 +233,8 @@ namespace Majorsilence.Reporting.Rdl
             }
             catch (Exception ex)
             {
-                rpt.rl.LogError(8, string.Format("Exception in CustomReportItem handling: {0}", ex.Message));
+                int severity = IsCriNativeLibraryException(ex) ? 4 : 8;
+                rpt.rl.LogError(severity, string.Format("Exception in CustomReportItem handling: {0}", ex.Message));
             }
             finally
             {
@@ -244,16 +246,33 @@ namespace Majorsilence.Reporting.Rdl
 
         byte[] GenerateImage(ImageCodecInfo codec, Draw2.Imaging.EncoderParameters parameters, int width, int height, ICustomReportItem cri)
 		{
-			Draw2.Bitmap bm = new Draw2.Bitmap(width, height);
-			cri.DrawImage(ref bm);
+            try
+            {
+                Draw2.Bitmap bm = new Draw2.Bitmap(width, height);
+                cri.DrawImage(ref bm);
 
-			MemoryStream ostrm = new MemoryStream();
-			bm.Save(ostrm, codec, parameters);
-			byte[] ba = ostrm.ToArray();
-			ostrm.Close();
-            bm.Dispose();
-			return ba;
+                MemoryStream ostrm = new MemoryStream();
+                bm.Save(ostrm, codec, parameters);
+                byte[] ba = ostrm.ToArray();
+                ostrm.Close();
+                bm.Dispose();
+                return ba;
+            }
+            catch (Exception)
+            {
+                return Array.Empty<byte>();
+            }
 		}
+
+        static bool IsCriNativeLibraryException(Exception ex)
+        {
+            for (Exception e = ex; e != null; e = e.InnerException)
+            {
+                if (e is TypeInitializationException || e is System.DllNotFoundException)
+                    return true;
+            }
+            return false;
+        }
 
         async Task SetProperties(Report rpt, Row row, ICustomReportItem cri)
         {
