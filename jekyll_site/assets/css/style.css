@@ -1,76 +1,74 @@
 ---
 ---
-/* Rouge dark syntax theme for blog posts */
+/* Syntax highlighting — scoped to .prose to match main.css specificity */
 
-.highlight pre { background: #0d1117; }
+.prose .highlighter-rouge pre { background: #0d1117; }
+.prose .highlight .hll { background-color: #1e2030; }
 
-.highlight .hll { background-color: #1e2030; }
+.prose .highlight .c,
+.prose .highlight .c1,
+.prose .highlight .cm,
+.prose .highlight .cs,
+.prose .highlight .cp  { color: #7c8394; font-style: italic; }
 
-/* Comments */
-.highlight .c,
-.highlight .c1,
-.highlight .cm,
-.highlight .cs,
-.highlight .cp  { color: #7c8394; font-style: italic; }
+.prose .highlight .k,
+.prose .highlight .kd,
+.prose .highlight .kn,
+.prose .highlight .kp,
+.prose .highlight .kr,
+.prose .highlight .kc,
+.prose .highlight .kt  { color: #cba6f7; font-weight: 500; }
 
-/* Keywords */
-.highlight .k,
-.highlight .kd,
-.highlight .kn,
-.highlight .kp,
-.highlight .kr,
-.highlight .kc,
-.highlight .kt  { color: #cba6f7; font-weight: 500; }
+.prose .highlight .s,
+.prose .highlight .s1,
+.prose .highlight .s2,
+.prose .highlight .sb,
+.prose .highlight .sd,
+.prose .highlight .sh,
+.prose .highlight .sr,
+.prose .highlight .ss,
+.prose .highlight .sx,
+.prose .highlight .sc  { color: #a6e3a1; }
 
-/* Strings */
-.highlight .s,
-.highlight .s1,
-.highlight .s2,
-.highlight .sb,
-.highlight .sd,
-.highlight .sh,
-.highlight .sr,
-.highlight .ss,
-.highlight .sx,
-.highlight .sc  { color: #a6e3a1; }
+.prose .highlight .nb,
+.prose .highlight .bp  { color: #89dceb; }
 
-/* Numbers */
-.highlight .mi,
-.highlight .mf,
-.highlight .mo,
-.highlight .mh  { color: #fab387; }
+.prose .highlight .nc,
+.prose .highlight .no  { color: #f9e2af; }
 
-/* Names / identifiers */
-.highlight .nc,
-.highlight .no  { color: #f9e2af; }
-.highlight .nf,
-.highlight .nx,
-.highlight .nd  { color: #89dceb; }
-.highlight .nb,
-.highlight .bp  { color: #89dceb; }
-.highlight .nv,
-.highlight .vc,
-.highlight .vg,
-.highlight .vi  { color: #cba6f7; }
-.highlight .nt  { color: #89b4fa; }
-.highlight .na  { color: #89dceb; }
-.highlight .nn,
-.highlight .ni  { color: #f9e2af; }
-.highlight .ne  { color: #f38ba8; }
+.prose .highlight .nf,
+.prose .highlight .nx,
+.prose .highlight .na,
+.prose .highlight .nd  { color: #89dceb; }
 
-/* Operators / punctuation */
-.highlight .o,
-.highlight .ow  { color: #89dceb; }
-.highlight .p,
-.highlight .pi  { color: #cdd6f4; }
+.prose .highlight .nv,
+.prose .highlight .vc,
+.prose .highlight .vg,
+.prose .highlight .vi  { color: #cba6f7; }
 
-/* Diff */
-.highlight .gi  { color: #a6e3a1; }
-.highlight .gd  { color: #f38ba8; }
-.highlight .gh,
-.highlight .gu  { color: #14d9a4; font-weight: 700; }
+.prose .highlight .nt  { color: #89b4fa; }
 
-/* Generic output / error */
-.highlight .go  { color: #7c8394; }
-.highlight .ge  { font-style: italic; }
-.highlight .gs  { font-weight: 700; }
+.prose .highlight .nn,
+.prose .highlight .ni  { color: #f9e2af; }
+
+.prose .highlight .ne  { color: #f38ba8; }
+
+.prose .highlight .o,
+.prose .highlight .ow  { color: #89dceb; }
+
+.prose .highlight .mi,
+.prose .highlight .mf,
+.prose .highlight .mo,
+.prose .highlight .mh  { color: #fab387; }
+
+.prose .highlight .p,
+.prose .highlight .pi  { color: #cdd6f4; }
+
+.prose .highlight .gi  { color: #a6e3a1; }
+.prose .highlight .gd  { color: #f38ba8; }
+.prose .highlight .gh,
+.prose .highlight .gu  { color: #14d9a4; font-weight: 700; }
+
+.prose .highlight .go  { color: #7c8394; }
+.prose .highlight .ge  { font-style: italic; }
+.prose .highlight .gs  { font-weight: 700; }
