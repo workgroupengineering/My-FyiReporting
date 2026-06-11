@@ -219,7 +219,7 @@ namespace Majorsilence.Reporting.Rdl
 			}
 
 			sg.CloseMainStream();
-            _Cache = new RCache();
+            ResetRenderCache();
             return;
 		}
 
@@ -271,7 +271,7 @@ namespace Majorsilence.Reporting.Rdl
 					temp.CloseMainStream();
 				if (fs != null)
 					fs.Close();
-                _Cache = new RCache();
+                ResetRenderCache();
             }
 		}
 
@@ -296,7 +296,7 @@ namespace Majorsilence.Reporting.Rdl
 			finally
 			{
 				pgs.CleanUp();		// always want to make sure we cleanup to reduce resource usage
-                _Cache = new RCache();
+                ResetRenderCache();
             }
 
 			return;
@@ -323,7 +323,7 @@ namespace Majorsilence.Reporting.Rdl
             finally
             {
                 pgs.CleanUp();		// always want to make sure we cleanup to reduce resource usage
-                _Cache = new RCache();
+                ResetRenderCache();
             }
 
             return;
@@ -393,7 +393,7 @@ namespace Majorsilence.Reporting.Rdl
 			finally
 			{
 				pgs.CleanUp();		// always want to make sure we clean this up since 
-                _Cache = new RCache();
+                ResetRenderCache();
 			}
 
 			return pgs;
@@ -656,6 +656,13 @@ namespace Majorsilence.Reporting.Rdl
 		{
 			get {return _Cache;}
 		}
+
+		private void ResetRenderCache()
+		{
+			var old = _Cache;
+			_Cache = new RCache();
+			old.TransferRowsTo(_Cache);
+		}
 	}
 
     internal class RCache
@@ -763,6 +770,15 @@ namespace Majorsilence.Reporting.Rdl
         string GetKey(int onum, string name)
         {
             return name + onum.ToString();
+        }
+
+        internal void TransferRowsTo(RCache target)
+        {
+            foreach (var kvp in _RunCache)
+            {
+                if (kvp.Value is Rows)
+                    target._RunCache.TryAdd(kvp.Key, kvp.Value);
+            }
         }
     }
 
