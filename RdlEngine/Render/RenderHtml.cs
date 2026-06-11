@@ -522,7 +522,7 @@ function findObject(id) {
 
 			if (sb.Length > 0)
 			{
-				if (bForceRelative || ri.YParents != null)
+				if (bForceRelative)
 					sb.Insert(0, "position: relative; ");
 				else
 					sb.Insert(0, "position: absolute; ");
@@ -730,6 +730,7 @@ function findObject(id) {
             {									
 				// make all the characters browser readable
 				t = XmlUtil.XmlAnsi(t);
+				t = t.Replace("\r\n", "<br/>").Replace("\r", "<br/>").Replace("\n", "<br/>");
 
 				// handle any specified bookmark
 				t = Bookmark(await tb.BookmarkValue(this.r, row), t);

@@ -728,6 +728,7 @@ function findObject(id) {
             {                                   //   this can screw up the generated HTML if not properly formed HTML
                                                 // make all the characters browser readable
                 t = XmlUtil.XmlAnsi(t);
+                t = t.Replace("\r\n", "<br/>").Replace("\r", "<br/>").Replace("\n", "<br/>");
 
                 // handle any specified bookmark
                 t = Bookmark(await tb.BookmarkValue(this.r, row), t);
