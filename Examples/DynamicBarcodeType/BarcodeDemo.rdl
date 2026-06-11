@@ -102,6 +102,7 @@
             <Value>={?BarcodeValue}</Value>
           </CustomProperty>
         </CustomProperties>
+        <Source>Embedded</Source>
       </CustomReportItem>
       <Textbox Name="HintText">
         <Top>2.3in</Top>

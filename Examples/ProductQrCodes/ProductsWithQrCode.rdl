@@ -238,6 +238,7 @@
                           <Value>="PROD:" &amp; CStr(Fields!ProductID.Value) &amp; "|" &amp; Fields!ProductName.Value &amp; "|$" &amp; CStr(Fields!UnitPrice.Value)</Value>
                         </CustomProperty>
                       </CustomProperties>
+                      <Source>Embedded</Source>
                     </CustomReportItem>
                   </ReportItems>
                 </TableCell>

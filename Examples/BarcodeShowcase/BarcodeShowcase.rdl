@@ -65,6 +65,7 @@
             <Value>https://github.com/majorsilence/Reporting</Value>
           </CustomProperty>
         </CustomProperties>
+        <Source>Embedded</Source>
       </CustomReportItem>
 
       <!-- Row 1: Code 128 -->
@@ -87,6 +88,7 @@
             <Value>HELLO-WORLD-128</Value>
           </CustomProperty>
         </CustomProperties>
+        <Source>Embedded</Source>
       </CustomReportItem>
 
       <!-- Row 2: Code 39 -->
@@ -109,6 +111,7 @@
             <Value>CODE39HELLO</Value>
           </CustomProperty>
         </CustomProperties>
+        <Source>Embedded</Source>
       </CustomReportItem>
 
       <!-- ===== RIGHT COLUMN ===== -->
@@ -133,6 +136,7 @@
             <Value>DataMatrix-Demo-Text</Value>
           </CustomProperty>
         </CustomProperties>
+        <Source>Embedded</Source>
       </CustomReportItem>
 
       <!-- Row 1: Aztec Code -->
@@ -155,6 +159,7 @@
             <Value>Aztec Demo Text</Value>
           </CustomProperty>
         </CustomProperties>
+        <Source>Embedded</Source>
       </CustomReportItem>
 
       <!-- Row 2: PDF417 -->
@@ -177,6 +182,7 @@
             <Value>PDF417 Multi-Row Barcode Demo</Value>
           </CustomProperty>
         </CustomProperties>
+        <Source>Embedded</Source>
       </CustomReportItem>
 
       <!-- Row 3 (full width): ITF-14 — note property name is ITF14, not Code, and value must be 13 or 14 digits -->
@@ -199,6 +205,7 @@
             <Value>12345678901231</Value>
           </CustomProperty>
         </CustomProperties>
+        <Source>Embedded</Source>
       </CustomReportItem>
 
     </ReportItems>

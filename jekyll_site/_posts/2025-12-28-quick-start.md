@@ -160,6 +160,7 @@ Reference `Majorsilence.Reporting.RdlCri` and place a `<CustomReportItem>` in yo
       <Value>=Fields!ProductName.Value</Value>
     </CustomProperty>
   </CustomProperties>
+  <Source>Embedded</Source>
 </CustomReportItem>
 ```
 
