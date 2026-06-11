@@ -27,7 +27,11 @@ Get-ChildItem .\ -include bin,obj,build-output -Recurse | foreach ($_) { remove-
 
 $Version=""
 GetVersions([ref]$Version)
-Write-Host  $Version
+Write-Host $Version
+
+if ($env:GITHUB_OUTPUT) {
+    "version=$Version" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+}
 
 $solutionPath = Join-Path $CURRENTPATH "MajorsilenceReporting.sln"
 dotnet restore $solutionPath
