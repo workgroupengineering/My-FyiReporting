@@ -25,7 +25,7 @@ kramdown:
 
 ## The application virtual path
 baseurl: 
-siteversion: 2025.12.27
+siteversion: 2026.06.10
 title: Majorsilence Reporting
 
 plugins: [jekyll-paginate, jekyll-redirect-from, jekyll-sitemap]
