@@ -5,8 +5,8 @@ $CURRENTPATH=$pwd.Path
 # /p:Configuration="Debug", "Debug-DrawingCompat", "Release", "Release-DrawingCompat"
 $pConfiguration="Release"
 $pConfigurationCompat="Release-DrawingCompat"
-$pTargetFramework="net8.0-windows"
-$pTargetFrameworkGeneric="net8.0"
+$pTargetFramework="net10.0-windows"
+$pTargetFrameworkGeneric="net10.0"
 
 function delete_files([string]$path)
 {
@@ -29,17 +29,18 @@ $Version=""
 GetVersions([ref]$Version)
 Write-Host  $Version
 
-dotnet restore "./MajorsilenceReporting.sln"
+$solutionPath = Join-Path $CURRENTPATH "MajorsilenceReporting.sln"
+dotnet restore $solutionPath
 # ************* Begin anycpu *********************************************
-dotnet build "$CURRENTPATH\MajorsilenceReporting.sln" --configuration Release-DrawingCompat --verbosity minimal
-dotnet publish RdlCmd -c Release-DrawingCompat -r linux-x64 -f net8.0 --self-contained true #-p:PublishSingleFile=true
-dotnet publish RdlCmd -c Release-DrawingCompat -r linux-arm64 -f net8.0 --self-contained true #-p:PublishSingleFile=true
-dotnet publish RdlCmd -c Release-DrawingCompat -r osx-x64 -f net8.0 --self-contained true #-p:PublishSingleFile=true
-dotnet publish RdlCmd -c Release-DrawingCompat -r osx-arm64 -f net8.0 --self-contained true #-p:PublishSingleFile=true
+dotnet build $solutionPath --configuration Release-DrawingCompat --verbosity minimal -p:GeneratePackageOnBuild=false
+dotnet publish RdlCmd -c Release-DrawingCompat -r linux-x64 -f $pTargetFrameworkGeneric --self-contained true -p:GeneratePackageOnBuild=false #-p:PublishSingleFile=true
+dotnet publish RdlCmd -c Release-DrawingCompat -r linux-arm64 -f $pTargetFrameworkGeneric --self-contained true -p:GeneratePackageOnBuild=false #-p:PublishSingleFile=true
+dotnet publish RdlCmd -c Release-DrawingCompat -r osx-x64 -f $pTargetFrameworkGeneric --self-contained true -p:GeneratePackageOnBuild=false #-p:PublishSingleFile=true
+dotnet publish RdlCmd -c Release-DrawingCompat -r osx-arm64 -f $pTargetFrameworkGeneric --self-contained true -p:GeneratePackageOnBuild=false #-p:PublishSingleFile=true
 
-dotnet build "$CURRENTPATH\MajorsilenceReporting.sln" --configuration $pConfiguration --verbosity minimal
-dotnet publish RdlCmd -c Release -r win-x64 -f net8.0 --self-contained true #-p:PublishSingleFile=true
-dotnet publish RdlCmd -c Release -r win-arm64 -f net8.0 --self-contained true #-p:PublishSingleFile=true
+dotnet build $solutionPath --configuration $pConfiguration --verbosity minimal -p:GeneratePackageOnBuild=false
+dotnet publish RdlCmd -c Release -r win-x64 -f $pTargetFrameworkGeneric --self-contained true -p:GeneratePackageOnBuild=false #-p:PublishSingleFile=true
+dotnet publish RdlCmd -c Release -r win-arm64 -f $pTargetFrameworkGeneric --self-contained true -p:GeneratePackageOnBuild=false #-p:PublishSingleFile=true
 
 $buildoutputpath_designer="$CURRENTPATH\Release-Builds\build-output\majorsilence-reporting-designer-$pTargetFramework-anycpu"
 $buildoutputpath_desktop="$CURRENTPATH\Release-Builds\build-output\majorsilence-reporting-desktop-$pTargetFrameworkGeneric-anycpu"
@@ -61,11 +62,11 @@ mkdir "$buildoutputpath_reader"
 Remove-Item "$buildoutputpath_mapfile" -Recurse -ErrorAction Ignore
 mkdir "$buildoutputpath_mapfile"
 
-Copy-Item .\ReportDesigner\bin\$pConfiguration\$pTargetFramework\ -Destination "$buildoutputpath_designer\" -Recurse
-Copy-Item .\RdlDesign\App.ico -Destination "$buildoutputpath_designer\" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "ReportDesigner" "bin" $pConfiguration $pTargetFramework) -Destination "$buildoutputpath_designer\" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlDesign" "App.ico") -Destination "$buildoutputpath_designer\" -Recurse
 
-Copy-Item .\RdlDesktop\bin\$pConfiguration\$pTargetFrameworkGeneric\ -Destination "$buildoutputpath_desktop\" -Recurse
-Copy-Item .\RdlCmd\bin\$pConfiguration\$pTargetFrameworkGeneric\ -Destination "$buildoutputpath_rdlcmd\" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlDesktop" "bin" $pConfiguration $pTargetFrameworkGeneric) -Destination "$buildoutputpath_desktop\" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlCmd" "bin" $pConfiguration $pTargetFrameworkGeneric) -Destination "$buildoutputpath_rdlcmd\" -Recurse
 
 
 $rdlcmd_win="$buildoutputpath_rdlcmd_selfcontained\win-x64"
@@ -81,14 +82,14 @@ mkdir "$rdlcmd_win_arm64"
 mkdir "$rdlcmd_linux_arm64"
 mkdir "$rdlcmd_osx_arm64"
 
-Copy-Item .\RdlCmd\bin\$pConfiguration\$pTargetFrameworkGeneric\win-x64\publish -Destination "$rdlcmd_win" -Recurse
-Copy-Item .\RdlCmd\bin\$pConfiguration\$pTargetFrameworkGeneric\win-arm64\publish -Destination "$rdlcmd_win_arm64" -Recurse
-Copy-Item .\RdlCmd\bin\$pConfigurationCompat\$pTargetFrameworkGeneric\linux-x64\publish -Destination "$rdlcmd_linux" -Recurse
-Copy-Item .\RdlCmd\bin\$pConfigurationCompat\$pTargetFrameworkGeneric\linux-arm64\publish -Destination "$rdlcmd_linux_arm64" -Recurse
-Copy-Item .\RdlCmd\bin\$pConfigurationCompat\$pTargetFrameworkGeneric\osx-x64\publish -Destination "$rdlcmd_osx" -Recurse
-Copy-Item .\RdlCmd\bin\$pConfigurationCompat\$pTargetFrameworkGeneric\osx-arm64\publish -Destination "$rdlcmd_osx_arm64" -Recurse
-Copy-Item .\RdlReader\bin\$pConfiguration\$pTargetFramework\ -Destination "$buildoutputpath_reader\" -Recurse
-Copy-Item .\RdlMapFile\bin\$pConfiguration\$pTargetFramework\ -Destination "$buildoutputpath_mapfile\" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlCmd" "bin" $pConfiguration $pTargetFrameworkGeneric "win-x64" "publish") -Destination "$rdlcmd_win" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlCmd" "bin" $pConfiguration $pTargetFrameworkGeneric "win-arm64" "publish") -Destination "$rdlcmd_win_arm64" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlCmd" "bin" $pConfigurationCompat $pTargetFrameworkGeneric "linux-x64" "publish") -Destination "$rdlcmd_linux" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlCmd" "bin" $pConfigurationCompat $pTargetFrameworkGeneric "linux-arm64" "publish") -Destination "$rdlcmd_linux_arm64" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlCmd" "bin" $pConfigurationCompat $pTargetFrameworkGeneric "osx-x64" "publish") -Destination "$rdlcmd_osx" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlCmd" "bin" $pConfigurationCompat $pTargetFrameworkGeneric "osx-arm64" "publish") -Destination "$rdlcmd_osx_arm64" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlReader" "bin" $pConfiguration $pTargetFramework) -Destination "$buildoutputpath_reader\" -Recurse
+Copy-Item (Join-Path $CURRENTPATH "RdlMapFile" "bin" $pConfiguration $pTargetFramework) -Destination "$buildoutputpath_mapfile\" -Recurse
 
 cd Release-Builds
 cd build-output	
@@ -156,8 +157,13 @@ cd "$CURRENTPATH"
 
 
 # ************* Nuget ************************************************
-Get-ChildItem -Recurse -Exclude "$CURRENTPATH\Release-Builds\build-output" .\*.nupkg | Copy-Item -Destination "$CURRENTPATH\Release-Builds\build-output" -Force -ErrorAction SilentlyContinue
-Get-ChildItem -Recurse -Exclude "$CURRENTPATH\Release-Builds\build-output" .\*.snupkg | Copy-Item -Destination "$CURRENTPATH\Release-Builds\build-output" -Force -ErrorAction SilentlyContinue
+$nugetOutputPath = Join-Path $CURRENTPATH "Release-Builds" "build-output"
+
+dotnet build $solutionPath --configuration $pConfigurationCompat --verbosity minimal -p:GeneratePackageOnBuild=false
+dotnet pack $solutionPath --configuration $pConfigurationCompat --no-build --output $nugetOutputPath
+
+dotnet build $solutionPath --configuration $pConfiguration --verbosity minimal -p:GeneratePackageOnBuild=false
+dotnet pack $solutionPath --configuration $pConfiguration --no-build --output $nugetOutputPath
 
 
 Write-Output "Publish nuget packages with commands"
