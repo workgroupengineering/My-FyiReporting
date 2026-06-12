@@ -38,6 +38,10 @@ namespace Majorsilence.Reporting.Rdl
         // initializes when no init available
         static public void RdlEngineConfigInit()
         {
+            // Register legacy code-page encodings (e.g. Windows-1252) so MHTML
+            // conversion works on non-Windows platforms.
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
             string d1, d2;
             d1 = AppDomain.CurrentDomain.BaseDirectory;
             d2 = AppDomain.CurrentDomain.RelativeSearchPath;

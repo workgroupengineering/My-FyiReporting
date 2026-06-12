@@ -53,8 +53,8 @@ namespace Majorsilence.Reporting.Rdl
 
 		public string GetText()
 		{
-			_sw.Flush();
-			StreamReader sr = null; 
+			_sw?.Flush();
+			StreamReader sr = null;
 			string t=null;
 			try
 			{

@@ -218,25 +218,17 @@ namespace Majorsilence.Reporting.Rdl
             if (!uri.IsFile)
                 throw new UriFormatException("url is not a local file");
 
-            using (HttpClient client = new HttpClient())
+            string localPath = uri.LocalPath;
+            if (!File.Exists(localPath))
             {
-                client.AddMajorsilenceReportingUserAgent();
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (!response.IsSuccessStatusCode)
-                {
-                    this.Clear();
-                    return;
-                }
+                this.Clear();
+                return;
+            }
 
-                _ResponseBytes = await response.Content.ReadAsByteArrayAsync();
-
-                // For local operations, we consider the data are never compressed. Else, the "Content-Encoding" field
-                // in the headers would be "gzip" or "deflate". This could be handled quite easily with SharpZipLib for instance.
-
-                // sometimes URL is indeterminate, eg, "http://website.com/myfolder"
-                // in that case the folder and file resolution MUST be done on 
-                // the server, and returned to the client as ContentLocation
-                _ContentLocation = response.Content.Headers.ContentLocation?.ToString() ?? "";
+            // HttpClient does not support file:// URIs on non-Windows platforms.
+            // Read local files directly to avoid the platform limitation.
+            _ResponseBytes = await File.ReadAllBytesAsync(localPath);
+            _ContentLocation = "";
 
                 // if we have string content, determine encoding type
                 // (must cast to prevent null)
@@ -267,8 +259,7 @@ namespace Majorsilence.Reporting.Rdl
 
                     case "js": _DetectedContentType = "application/x-javascript"; break;
                     default:
-                        // Line commented: we don't change it
-                        _DetectedContentType = response.Content.Headers.ContentType?.ToString() ?? ""; // Always "application/octet-stream" ...
+                        _DetectedContentType = "application/octet-stream";
                         break;
                 }
                 if (_DetectedContentType == null)
@@ -277,7 +268,6 @@ namespace Majorsilence.Reporting.Rdl
                     _DetectedEncoding = null;
                 else if (_ForcedEncoding == null)
                     _DetectedEncoding = DetectEncoding(_DetectedContentType, _ResponseBytes);
-            }
         }
 
 		#endregion Public methods
