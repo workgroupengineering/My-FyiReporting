@@ -9,6 +9,7 @@
         <Configurations>Debug;Release;Debug-DrawingCompat;Release-DrawingCompat</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <DefineConstants>$(DefineConstants);DRAWINGCOMPAT</DefineConstants>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
     <ItemGroup>
         <None Remove=".gitignore"/>

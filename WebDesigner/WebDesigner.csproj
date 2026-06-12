@@ -10,6 +10,7 @@
     <PackageId>Majorsilence.Reporting.WebDesigner</PackageId>
     <Description>Web-based RDL report designer Web Component with ASP.NET Core preview/save/load endpoints.</Description>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

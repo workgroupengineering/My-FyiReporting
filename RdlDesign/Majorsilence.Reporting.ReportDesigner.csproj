@@ -19,6 +19,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
         <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+        <IsPackable>true</IsPackable>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Update="System">
