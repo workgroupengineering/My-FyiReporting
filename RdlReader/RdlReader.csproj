@@ -4,6 +4,7 @@
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<DelaySign>false</DelaySign>
 		<OutputType>WinExe</OutputType>
+		<IsPackable>false</IsPackable>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>

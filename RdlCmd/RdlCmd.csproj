@@ -3,6 +3,7 @@
 		<ApplicationIcon>App.ico</ApplicationIcon>
 		<DelaySign>false</DelaySign>
 		<OutputType>Exe</OutputType>
+		<IsPackable>false</IsPackable>
 		<RootNamespace>Majorsilence.Reporting.RdlCmd</RootNamespace>
 		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
