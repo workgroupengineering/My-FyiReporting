@@ -32,7 +32,7 @@ namespace Majorsilence.Reporting.Benchmarks
                 "columns=EmployeeID,LastName,FirstName,ContactInfo_Phone,ContactInfo_Email",
                 pageHeaderText: "DataProviderTest TestMethod1");
             using var ms = new Majorsilence.Reporting.Rdl.MemoryStreamGen();
-            await fyiReport.RunGetData(null);
+            await fyiReport.RunGetData();
             await fyiReport.RunRender(ms, Majorsilence.Reporting.Rdl.OutputPresentationType.PDF);
         }
     }

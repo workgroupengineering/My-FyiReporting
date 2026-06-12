@@ -156,7 +156,7 @@ namespace Majorsilence.Reporting.RdlCreator
                 var create = new RdlCreator.Create();
                 var fyiReport = await create.GenerateRdl(report);
                 using var ms = new Majorsilence.Reporting.Rdl.MemoryStreamGen();
-                await fyiReport.RunGetData(null);
+                await fyiReport.RunGetData();
                 await fyiReport.RunRender(ms, Majorsilence.Reporting.Rdl.OutputPresentationType.PDF);
                 var pdf = ms.GetStream();
                 pdf.Position = 0;

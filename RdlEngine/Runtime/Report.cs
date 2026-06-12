@@ -112,6 +112,11 @@ namespace Majorsilence.Reporting.Rdl
 			return _CurrentPage.GetPageExpressionRows(exprname);
 		}
 
+        public async Task<bool> RunGetData()
+        {
+            return await RunGetData(null);
+        }
+        
 		/// <summary>
 		/// Read all the DataSets in the report
 		/// </summary>

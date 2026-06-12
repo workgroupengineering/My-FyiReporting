@@ -67,7 +67,7 @@ namespace Majorsilence.Reporting.RdlCreator.Tests
                 "columns=EmployeID,LastName,FirstName,Title",
                 pageHeaderText: "DataProviderTest TestMethod1");
             var ms = new Majorsilence.Reporting.Rdl.MemoryStreamGen();
-            await fyiReport.RunGetData(null);
+            await fyiReport.RunGetData();
             await fyiReport.RunRender(ms, Majorsilence.Reporting.Rdl.OutputPresentationType.CSV);
             var text = ms.GetText();
 
@@ -97,7 +97,7 @@ namespace Majorsilence.Reporting.RdlCreator.Tests
                 "columns=EmployeeID,LastName,FirstName,ContactInfo_Phone,ContactInfo_Email",
                 pageHeaderText: "DataProviderTest TestMethod1");
             var ms = new Majorsilence.Reporting.Rdl.MemoryStreamGen();
-            await fyiReport.RunGetData(null);
+            await fyiReport.RunGetData();
             await fyiReport.RunRender(ms, Majorsilence.Reporting.Rdl.OutputPresentationType.CSV);
             var text = ms.GetText();
 

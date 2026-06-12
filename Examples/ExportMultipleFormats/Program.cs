@@ -32,7 +32,7 @@ if (report.ErrorMaxSeverity > 4)
 }
 
 // Query the database exactly once
-await report.RunGetData(null);
+await report.RunGetData();
 
 // Render to each format from the same in-memory data
 var formats = new[]

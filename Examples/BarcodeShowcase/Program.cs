@@ -30,7 +30,7 @@ if (report.ErrorMaxSeverity > 4)
     return 1;
 }
 
-await report.RunGetData(null);
+await report.RunGetData();
 
 var ofs = new OneFileStreamGen(outPath, true);
 await report.RunRender(ofs, OutputPresentationType.PDF);
