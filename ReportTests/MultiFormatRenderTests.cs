@@ -39,6 +39,11 @@ namespace ReportTests
             new object[] { "WorldFacts.rdl" },
         };
 
+        private static readonly object[] ChartReports =
+        {
+            new object[] { "ChartTypes.rdl" },
+        };
+
         [Test, TestCaseSource(nameof(NorthwindReports))]
         public async Task CsvRender_NorthwindReport_ProducesNonEmptyOutput(string reportFile)
         {
@@ -114,6 +119,24 @@ namespace ReportTests
                 Assert.That(text, Is.Not.Empty, "HTML output is empty");
                 Assert.That(text, Does.Contain("<html").Or.Contain("<table").Or.Contain("<div"));
             });
+        }
+
+        [Test, TestCaseSource(nameof(ChartReports))]
+        public async Task HtmlRender_ChartReport_ContainsHtmlStructure(string reportFile)
+        {
+            await RenderAndAssertNonEmpty(reportFile, OutputPresentationType.HTML, ".html", assertText: text =>
+            {
+                Assert.That(text, Is.Not.Empty, "HTML output is empty");
+                Assert.That(text, Does.Contain("<html").Or.Contain("<table").Or.Contain("<div"),
+                    "Output does not appear to be HTML");
+            });
+        }
+
+        [Test, TestCaseSource(nameof(ChartReports))]
+        public async Task CsvRender_ChartReport_ProducesNonEmptyOutput(string reportFile)
+        {
+            await RenderAndAssertNonEmpty(reportFile, OutputPresentationType.CSV, ".csv", assertText: text =>
+                Assert.That(text, Is.Not.Empty, "CSV output is empty"));
         }
 
         private async Task RenderAndAssertNonEmpty(
